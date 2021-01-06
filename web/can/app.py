@@ -24,8 +24,8 @@ def success():
 
 def send_message(ID, data):
     bus = can.interface.Bus(bustype=bustype, channel=channel)
-    msg = can.Message(arbitration_id=0x11,
-                      data= b'deadbeef',
+    msg = can.Message(arbitration_id=ID,
+                      data= [x for x in str(data)],
                       is_extended_id=True)
     bus.send(msg)
     
