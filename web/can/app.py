@@ -12,25 +12,22 @@ def index():
 
 @app.route("/success")
 def success():
-    bus = can.interface.Bus(bustype=bustype, channel=channel)
-    msg = can.Message(arbitration_id=0xc0ffee,
-                      data=[10, 0, 0, 1, 3, 1, 4, 1],
-                      is_extended_id=False)
-    bus.send(msg)
-    
+    ID = request.args.get("id")
+    data = request.args.get("data")
+
+    if not ID or not data:
+        return render_template("failure.html")
+
+    send_message(ID, data)
     return render_template("success.html")
-    # name = request.args.get("name")
-
-    # if not name:
-    #     return render_template("failure.html")
-
-    # return render_template("success.html", name=name)
+    
 
 def send_message(ID, data):
     bus = can.interface.Bus(bustype=bustype, channel=channel)
-    msg = can.Message(arbitration_id=123,
-                      data=[0, 5, 0, 1, 3, 1, 4, 1],
+    msg = can.Message(arbitration_id=ID,
+                      data= [int(x) for x in str(data)],
                       is_extended_id=True)
+    bus.send(msg)
     
 if __name__ == "__main__":
     app.run()
