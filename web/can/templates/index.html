@@ -1,0 +1,11 @@
+{% extends "layout.html" %}
+
+{% block body%}
+    <form action="/success">
+        <label for="id">ID:</label>
+        <input name="id" type="text">
+        <label for="data">Message:</label>
+        <input name="data" type="text">
+        <input type="submit">
+    </form>
+{% endblock %}
