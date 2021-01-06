@@ -17,6 +17,8 @@ def success():
                       data=[10, 0, 0, 1, 3, 1, 4, 1],
                       is_extended_id=False)
     bus.send(msg)
+    
+    return render_template("success.html")
     # name = request.args.get("name")
 
     # if not name:
