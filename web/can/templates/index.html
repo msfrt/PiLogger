@@ -1,11 +1,72 @@
 {% extends "layout.html" %}
 
-{% block body%}
+{% block style %}
+.byte_box {
+    height: 45px;
+    width: 45px;
+    font-size: 25px;
+    text-align: center;
+    border: 1px solid #000000;
+}
+input[type=text]::-webkit-inner-spin-button,
+input[type=text]::-webkit-outer-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+{% endblock %}
+
+
+{% block script %}
+function getCodeBoxElement(index) {
+  return document.getElementById('data' + index);
+}
+function onKeyUpEvent(index, event) {
+  const eventCode = event.which || event.keyCode;
+  if (getCodeBoxElement(index).value.length === 2) {
+    if (index !== 8) {
+      getCodeBoxElement(index+ 1).focus();
+    } else {
+      getCodeBoxElement(index).blur();
+      // Submit code
+      // console.log('submit code ');
+    }
+  }
+  if (eventCode === 8 && index !== 1 && getCodeBoxElement(index).value.length === 0) {
+    getCodeBoxElement(index - 1).focus();
+  }
+}
+function onFocusEvent(index) {
+  for (item = 1; item < index; item++) {
+    const currentElement = getCodeBoxElement(item);
+    if (!currentElement.value) {
+        currentElement.focus();
+        break;
+    }
+  }
+}
+{% endblock %}
+
+{% block body %}
     <form action="/success">
-        <label for="id">ID:</label>
-        <input name="id" type="text">
-        <label for="data">Message:</label>
-        <input name="data" type="text">
-        <input type="submit">
+        <p>
+            <label for="id">ID:</label>
+            <input name="id" type="text">
+        </p>
+        <p>
+            <label for="data0">Message (Hexadecimal):</label>
+            <div>
+                <input class="byte_box" id="data1" name="data1" type="text" maxlength="2" onkeyup="onKeyUpEvent(1, event)" onfocus="onFocusEvent(1)">
+                <input class="byte_box" id="data2" name="data2" type="text" maxlength="2" onkeyup="onKeyUpEvent(2, event)" onfocus="onFocusEvent(2)">
+                <input class="byte_box" id="data3" name="data3" type="text" maxlength="2" onkeyup="onKeyUpEvent(3, event)" onfocus="onFocusEvent(3)">
+                <input class="byte_box" id="data4" name="data4" type="text" maxlength="2" onkeyup="onKeyUpEvent(4, event)" onfocus="onFocusEvent(4)">
+                <input class="byte_box" id="data5" name="data5" type="text" maxlength="2" onkeyup="onKeyUpEvent(5, event)" onfocus="onFocusEvent(5)">
+                <input class="byte_box" id="data6" name="data6" type="text" maxlength="2" onkeyup="onKeyUpEvent(6, event)" onfocus="onFocusEvent(6)">
+                <input class="byte_box" id="data7" name="data7" type="text" maxlength="2" onkeyup="onKeyUpEvent(7, event)" onfocus="onFocusEvent(7)">
+                <input class="byte_box" id="data8" name="data8" type="text" maxlength="2" onkeyup="onKeyUpEvent(8, event)" onfocus="onFocusEvent(8)">
+            </div>
+        </p>
+        <p>
+            <input type="submit">
+        </p>
     </form>
 {% endblock %}
