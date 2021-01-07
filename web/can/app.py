@@ -14,12 +14,12 @@ def index():
 def success():
     ID = request.args.get("id")
     
-    data = ""
+    data = []
     for i in range(1, 9):
         byte = request.args.get(f"data{i}")
         if not byte:
             continue
-        data += byte
+        data.append(byte)
 
     if not ID or not data:
         return render_template("failure.html")
