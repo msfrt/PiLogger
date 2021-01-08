@@ -12,4 +12,6 @@ database:
     pass: gogreen
 
 
-    
+busses:
+    - vcan0
+    - can0
