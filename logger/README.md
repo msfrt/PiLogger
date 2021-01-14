@@ -18,11 +18,11 @@ To use the logger, you must build it first. This is accomplished using [CMake](h
 * [yaml-cpp](https://github.com/jbeder/yaml-cpp) is used for YAML file parsing, but is included as a submodule in this repository to make for easy building. If the yaml-cpp files do not appear in the `logger/src/external/yaml-cpp` directory after cloning, cd into that directory and run `git submodule init`, followed by `git submodule update`.
 
 ## CMake
-CMake creates the Makefiles files necessary for UNIX building. To run CMake:
+CMake creates the Makefiles necessary for UNIX building. To run CMake:
 1. `cd logger/src`
-1. `mkdir build`
-1. `cd build`
-1. `cmake ..`
+2. `mkdir build`
+3. `cd build`
+4. `cmake ..`
 
 The Makefiles should now be present if all prerequisits were satisfied.
 

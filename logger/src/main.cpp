@@ -1,12 +1,14 @@
 #include <iostream>
 #include <string>
 #include "yaml-cpp/yaml.h"
+#include "ThreadableMsgQueue.hpp"
 
 using namespace::std;
 
 /// The default name of the logger configuration file
 const string DEFAULT_CONFIG_FILE = "logger.conf";
 
+CThreadableMsgQueue queue;
 
 int main(int argc, char *argv[])
 {
@@ -37,6 +39,9 @@ int main(int argc, char *argv[])
         for (YAML::const_iterator bus = config["busses"].begin(); bus != config["busses"].end(); ++bus) {
             std::cout << bus->as<string>() << "\n";
         }
+    } else {
+        cerr << "ERROR: You must configure at least one bus to log!" << endl;
+        exit( 1 );
     }
 
     return 0;
