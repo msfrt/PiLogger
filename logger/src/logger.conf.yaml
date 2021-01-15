@@ -12,6 +12,5 @@ database:
     pass: gogreen
 
 
-busses:
+interfaces:
     - vcan0
-    - can0

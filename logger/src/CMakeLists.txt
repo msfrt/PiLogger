@@ -23,6 +23,11 @@ add_library(
     Message.hpp
     Message.cpp
 )
+add_library(
+    monitor
+    monitor.hpp
+    monitor.cpp
+)
 
    
 # compile
@@ -36,8 +41,14 @@ target_link_libraries(
               # yaml-cpp's CMakeLists.txt file
 )
 
+# link pthread
+set(THREADS_PREFER_PTHREAD_FLAG ON)
+find_package(Threads REQUIRED)
+target_link_libraries(${PROJECT_NAME} PRIVATE Threads::Threads)
+
 target_link_libraries(${PROJECT_NAME} PRIVATE threadable_msg_queue)
 target_link_libraries(${PROJECT_NAME} PRIVATE message)
+target_link_libraries(${PROJECT_NAME} PRIVATE monitor)
 
 # copy the config file to the build directory
 configure_file("logger.conf.yaml" "logger.conf" COPYONLY)
