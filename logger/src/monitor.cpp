@@ -5,7 +5,9 @@
  */
 
 #include <iostream>
+#include <iomanip>
 #include <string.h>
+#include <string>
 
 #include <unistd.h>
 #include <net/if.h>
@@ -15,12 +17,15 @@
 #include <linux/can.h>
 #include <linux/can/raw.h>
 
+#include <semaphore.h>
+
 #include "monitor.hpp"
 
 using namespace std;
 
 extern const bool LOGGER_DEBUG;
 extern bool stop_logging;
+extern sem_t stdout_sem;
 
 
 /**
@@ -95,11 +100,14 @@ void* monitor(void* args){
 
         nbytes = read(s, &frame, sizeof(struct can_frame));
 
-        printf("0x%03X [%d] ",frame.can_id, frame.can_dlc);
-
-        for (int i = 0; i < frame.can_dlc; i++)
-            printf("%02X ",frame.data[i]);
-
+        if (LOGGER_DEBUG){
+            sem_wait(&stdout_sem);
+            cout << hex << setw(3) << setfill('0') << frame.can_id << ": ";
+            for (int i = 0; i < frame.can_dlc; i++)
+                printf("%02X ",frame.data[i]);
+            cout << endl;
+            sem_post(&stdout_sem);
+        }
 
     }
 

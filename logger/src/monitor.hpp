@@ -9,15 +9,18 @@
 
 #include <string>
 
-class CThreadableMsgQueue;
+#include <linux/can.h>
+#include <linux/can/raw.h>
+
+#include "ThreadableMsgQueue.hpp"
 
 /**
  * This struct should be populated and passed to the monitor thread as a void*
- * object. It will then be cast (oof) to obtain the parameters
+ * object. It will then be downcast (oof) to obtain the parameters
  */
 struct MonitorParams {
     std::string iface_name;
-    CThreadableMsgQueue *queue;
+    CThreadableMsgQueue<can_frame*> *queue;
 };
 
 void* monitor(void*);

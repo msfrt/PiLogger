@@ -3,9 +3,15 @@
 #include <vector>
 #include <pthread.h>
 #include <signal.h>
+#include <semaphore.h>
+
+#include <linux/can.h>
+#include <linux/can/raw.h>
+
 #include "yaml-cpp/yaml.h"
 #include "ThreadableMsgQueue.hpp"
 #include "monitor.hpp"
+
 
 using namespace::std;
 
@@ -22,7 +28,7 @@ const int MAX_THREADS = 100;
 
 /// Global queue to be accessed by socket monitoring threads and
 /// decoder thread
-CThreadableMsgQueue decoder_queue;
+CThreadableMsgQueue<can_frame*> decoder_queue;
 
 /// global vector to store the pthread objects for monitoring threads
 pthread_t monitoring_threads[MAX_THREADS];
@@ -32,7 +38,12 @@ pthread_t monitoring_threads[MAX_THREADS];
 int monitor_count = 0;
 
 /// global for threads to monitor and see if they need to exit
-extern bool stop_logging = false;
+bool stop_logging = false;
+
+/// A semaphore that will be used to restrict printing to the standard output
+/// stream. This is useful when debugging many threads. Doesn't do
+/// much if you're not debugging.
+sem_t stdout_sem;
 
 
 /**
@@ -42,7 +53,9 @@ extern bool stop_logging = false;
 int join_threads(pthread_t threads[], int count){
     for (long n = 0; n < count; n++) {
         if (pthread_join(threads[n], NULL)) {
+            sem_wait(&stdout_sem);
             cerr << "ERROR: Failed to join thread #" <<  n << "!" << endl;
+            sem_post(&stdout_sem);
             return 2;
         } 
     }
@@ -56,7 +69,11 @@ int join_threads(pthread_t threads[], int count){
  * \param signum The number that corresponds to the signal (2 is CTRL-C)
  */
 void signal_callback_handler(int signum) {
-   if (LOGGER_DEBUG) cout << "Caught signal " << signum << endl;
+   if (LOGGER_DEBUG) {
+       sem_wait(&stdout_sem);
+       cout << "Caught signal " << signum << endl;
+       sem_post(&stdout_sem);
+   }
 
    switch (signum)
    {
@@ -83,6 +100,10 @@ int main(int argc, char *argv[])
     // register the handler function for user signals (such as CTRL-C)
     // https://www.tutorialspoint.com/how-do-i-catch-a-ctrlplusc-event-in-cplusplus
     signal(SIGINT, signal_callback_handler);
+
+
+    // initialize stdout semaphore to 1, since we only want one thread printing at a time
+    sem_init(&stdout_sem, 0, 1);
 
 
     string config_file = DEFAULT_CONFIG_FILE;
@@ -133,7 +154,9 @@ int main(int argc, char *argv[])
         
         // create the thread
         if (pthread_create(&monitoring_threads[current_thread_idx], NULL, monitor, (void *)(&params_ary[current_thread_idx]))) {
+            sem_wait(&stdout_sem);
             cerr << "ERROR: Failed to create " <<  iface->as<string>() << " monitoring thread!" << endl;
+            sem_post(&stdout_sem);
             exit( 1 );
         }
 

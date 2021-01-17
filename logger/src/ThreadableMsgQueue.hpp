@@ -22,6 +22,7 @@ class CReceivedMessage;
  * queue array (when attempting to insert), or if there are no messages to consume
  * (when requesting to pop a queue that's empty)
  */
+template <class queue_item_type>
 class CThreadableMsgQueue {
 
 public:
@@ -37,6 +38,9 @@ public:
     void SetBufferSize(int size);
     int Initialize();
 
+    void Push(queue_item_type item);
+    queue_item_type Pop();
+
 private:
 
     // these are the semaphores that will control the buffer access
@@ -44,12 +48,12 @@ private:
     sem_t mN;  /// for the number of items currently in the buffer
     sem_t mE;  /// for the number of empty slots
 
-    /// buffer that will hold the received messages
-    std::vector<std::shared_ptr<CReceivedMessage>> mMessages;
+    /// buffer that will hold the queue items
+    std::vector<queue_item_type> mBuffer;
 
-    int mMessagesK   = 5000;  /// default buffer size
-    int mMessagesIn  = 0;     /// buffer index of the next insertable location
-    int mMessagesOut = 0;     /// buffer index of the next popable location
+    int mItemsK   = 5000;  /// default buffer size
+    int mItemsIn  = 0;     /// buffer index of the next insertable location
+    int mItemsOut = 0;     /// buffer index of the next popable location
 
     int mInitialized = false; /// to prevent unauthorized config after queue has been initialized
 
