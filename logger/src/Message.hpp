@@ -24,17 +24,6 @@ class CMessage {
 
 public:
 
-    /** Default constructor */
-    CMessage() = delete;
-
-    /** Copy constructor disabled */
-    CMessage(const CMessage &) = delete;
-    /** Assignment  operator disabled */
-    void operator=(const CMessage &) = delete;
-
-    CMessage(std::string *bus);
-    ~CMessage();
-
     /**
      * Set a pointer to the CAN frame
      * \param frame A pointer to the frame
@@ -46,6 +35,32 @@ public:
      * \returns A pointer to the CAN frame
      */
     can_frame* GetFrame() { return mFrame; }
+
+    /**
+     * Sets the bus' name
+     * \param bus A pointer to the bus' string name (ptr to save copies)
+     */
+    void SetBusName(std::string *bus) { mBusName = bus; }
+
+    /**
+     * Get the bus name
+     * \returns A pointer to the bus' name string
+     */
+    std::string *GetBusName() { return mBusName; }
+
+
+    /**
+     * Set this message's time
+     */ 
+    void Timestamp() {
+        std::time(&mTime);
+    }
+
+    /**
+     * Gets the time that the message was logged at
+     * \returns The time_t of the logging timestamp
+     */  
+    time_t GetTime() { return mTime; }
 
 
 private:

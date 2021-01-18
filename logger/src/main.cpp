@@ -9,6 +9,7 @@
 #include <linux/can/raw.h>
 
 #include "yaml-cpp/yaml.h"
+#include "Message.hpp"
 #include "ThreadableQueue.hpp"
 #include "monitor.hpp"
 
@@ -28,7 +29,7 @@ const int MAX_THREADS = 100;
 
 /// Global queue to be accessed by socket monitoring threads and
 /// decoder thread
-CThreadableMsgQueue<can_frame*> decoder_queue;
+CThreadableMsgQueue<CMessage> decoder_queue;
 
 /// global vector to store the pthread objects for monitoring threads
 pthread_t monitoring_threads[MAX_THREADS];

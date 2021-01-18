@@ -19,6 +19,9 @@
 
 #include <semaphore.h>
 
+#include "Message.hpp"
+#include "ThreadableQueue.hpp"
+
 #include "monitor.hpp"
 
 using namespace std;
@@ -96,15 +99,26 @@ void* monitor(void* args){
     while (!stop_logging){
 
         int nbytes;
-	    struct can_frame frame;
 
-        nbytes = read(s, &frame, sizeof(struct can_frame));
+	    struct can_frame *frame = new struct can_frame;  // allocate a new CAN frame (avoids needless copies)
+        
+
+        // read a CAN frame from the socket. This function call is blocking!
+        nbytes = read(s, frame, sizeof(struct can_frame));
+
+
+        CMessage msg;  // create a message from this bus
+        msg.Timestamp();  // record the time
+        msg.SetFrame(frame);  // set the frame ptr
+        msg.SetBusName(&params.iface_name);  // set the bus name
+        params.queue->Push(msg);  // launch it into the queue!
+        
 
         if (LOGGER_DEBUG){
             sem_wait(&stdout_sem);
-            cout << hex << setw(3) << setfill('0') << frame.can_id << ": ";
-            for (int i = 0; i < frame.can_dlc; i++)
-                printf("%02X ",frame.data[i]);
+            cout << hex << setw(3) << setfill('0') << frame->can_id << ": ";
+            for (int i = 0; i < frame->can_dlc; i++)
+                printf("%02X ",frame->data[i]);
             cout << endl;
             sem_post(&stdout_sem);
         }

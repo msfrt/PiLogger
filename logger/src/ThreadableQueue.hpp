@@ -13,7 +13,8 @@
 #include <vector>
 #include <memory>
 
-class CReceivedMessage;
+#include "Message.hpp"
+
 
 /**
  * Class that implements a circular queue that can be safely shared between threads

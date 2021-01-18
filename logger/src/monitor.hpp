@@ -12,6 +12,7 @@
 #include <linux/can.h>
 #include <linux/can/raw.h>
 
+#include "Message.hpp"
 #include "ThreadableQueue.hpp"
 
 /**
@@ -20,7 +21,7 @@
  */
 struct MonitorParams {
     std::string iface_name;
-    CThreadableMsgQueue<can_frame*> *queue;
+    CThreadableMsgQueue<CMessage> *queue;
 };
 
 void* monitor(void*);
