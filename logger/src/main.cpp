@@ -9,7 +9,7 @@
 #include <linux/can/raw.h>
 
 #include "yaml-cpp/yaml.h"
-#include "ThreadableMsgQueue.hpp"
+#include "ThreadableQueue.hpp"
 #include "monitor.hpp"
 
 
@@ -141,6 +141,18 @@ int main(int argc, char *argv[])
         cerr << "ERROR: You must configure at least one interface to log!" << endl;
         exit( 1 );
     }
+
+
+
+    // read in the queue configuration and initialize it
+    if (config["queue_size"]){
+        decoder_queue.SetBufferSize(config["queue_size"].as<int>());
+        if (LOGGER_DEBUG) cout << "Queue buffer size set to " << config["queue_size"].as<int>() << endl;
+    } else {
+        if (LOGGER_DEBUG) cout << "Using default queue buffer size of " << decoder_queue.GetBufferSize() << endl;
+    }
+    decoder_queue.Initialize();
+
 
 
     // loop through the configured CAN interfaces and create threads for their monotors

@@ -5,6 +5,7 @@
 #
 # -----------------------------------------------------------------------------
 
+# information for the InfluxDB database where the data should be logged
 database:
     host: localhost
     port: 8086
@@ -12,5 +13,17 @@ database:
     pass: gogreen
 
 
+# The CAN interfaces to log, as well as their respective DBCs.
+#
+# NOTE: The SocketCAN interface must already be up, otherwise the logger may fail.
+# Check `ifconfig` to verify.
 interfaces:
     - vcan0
+
+
+# The size of the decoding queue. THe decoding queue is where CAN frames are 
+# congregated after read from a socket. The sizing requirement depends on your bus
+# load, buses logged, and the number of messages to decode. It is limited by
+# computer hardware (most noteably memory).
+queue_size: 5000
+

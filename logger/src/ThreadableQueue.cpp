@@ -6,6 +6,6 @@
 
 #include <semaphore.h>
 
-#include "ThreadableMsgQueue.hpp"
+#include "ThreadableQueue.hpp"
 
 

@@ -14,9 +14,9 @@ add_subdirectory(external/yaml-cpp) # This is one way of referencing another CMa
 
 # add local repository libraries
 add_library(
-    threadable_msg_queue
-    ThreadableMsgQueue.hpp
-    ThreadableMsgQueue.cpp
+    threadable_queue
+    ThreadableQueue.hpp
+    ThreadableQueue.cpp
 )
 add_library(
     message
@@ -46,7 +46,7 @@ set(THREADS_PREFER_PTHREAD_FLAG ON)
 find_package(Threads REQUIRED)
 target_link_libraries(${PROJECT_NAME} PRIVATE Threads::Threads)
 
-target_link_libraries(${PROJECT_NAME} PRIVATE threadable_msg_queue)
+target_link_libraries(${PROJECT_NAME} PRIVATE threadable_queue)
 target_link_libraries(${PROJECT_NAME} PRIVATE message)
 target_link_libraries(${PROJECT_NAME} PRIVATE monitor)
 

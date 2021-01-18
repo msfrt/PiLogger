@@ -12,7 +12,7 @@
 #include <linux/can.h>
 #include <linux/can/raw.h>
 
-#include "ThreadableMsgQueue.hpp"
+#include "ThreadableQueue.hpp"
 
 /**
  * This struct should be populated and passed to the monitor thread as a void*
