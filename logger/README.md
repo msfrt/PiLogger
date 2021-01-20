@@ -1,13 +1,23 @@
-# logger <!-- omit in toc -->
+# logger
 
+<!-- @import "[TOC]" {cmd="toc" depthFrom=1 depthTo=6 orderedList=false} -->
+
+<!-- code_chunk_output -->
+
+- [logger](#logger)
 - [Build](#build)
   - [Dependencies](#dependencies)
+    - [Installing yaml-cpp](#installing-yaml-cpp)
+    - [Installing dbcppp](#installing-dbcppp)
   - [CMake](#cmake)
   - [Build binaries](#build-binaries)
 - [Configuration](#configuration)
 - [Run](#run)
   - [Command line options](#command-line-options)
     - [`-f`](#-f)
+
+<!-- /code_chunk_output -->
+
 
 # Build
 
@@ -16,6 +26,31 @@ To use the logger, you must build it first. This is accomplished using [CMake](h
 ## Dependencies
 
 * [yaml-cpp](https://github.com/jbeder/yaml-cpp) is used for YAML file parsing, but is included as a submodule in this repository to make for easy building. If the yaml-cpp files do not appear in the `logger/src/external/yaml-cpp` directory after cloning, cd into that directory and run `git submodule init`, followed by `git submodule update`.
+* [dbcppp](https://github.com/xR3b0rn/dbcppp) is used for CAN frame decoding, but is included as a submodule in this repository to make for easy building. If the dbcppp files do not appear in the `logger/src/external/dbcppp` directory after cloning, cd into that directory and run `git submodule init`, followed by `git submodule update`. dbccpp has two dependencies that you need to manually install:
+  * Boost 1.72.0 or greater (instructions from [here](https://stackoverflow.com/a/24086375))
+    1. `wget -O boost_1_72_0.tar.gz https://sourceforge.net/projects/boost/files/boost/1.72.0/boost_1_72_0.tar.gz/download`
+    1. `tar xzvf boost_1_72_0.tar.gz`
+    1. `cd boost_1_72_0/`
+    1. `sudo apt-get update`
+    1. `sudo apt-get install build-essential g++ python-dev autotools-dev libicu-dev libbz2-dev libboost-all-dev`
+    1. `./bootstrap.sh --prefix=/usr/`
+    1. `./b2`
+    1. `sudo ./b2 install`
+  * LibXml2
+    1. `sudo apt-get install libxml2-dev`
+
+
+### Installing yaml-cpp
+There is nothing that you need to do to install yaml-cpp after the submodule is cloned. The logger CMake command and the resultant Makefiles handle all compilation and linking.
+
+### Installing dbcppp
+Installing dbcppp is less straightforward, but still easy. Once you've installed Boost and LibXml2 as [described above](#dependencies), follow [these steps](https://github.com/xR3b0rn/dbcppp#build--install) in the dbcppp submodule folder:
+  1. `mkdir build`
+  1. `cd build`
+  1. `cmake -DCMAKE_BUILD_TYPE=Release ..`
+  1. `make -j`
+  1. `sudo make install`
+  1. `sudo ldconfig` on unix systems only
 
 ## CMake
 CMake creates the Makefiles necessary for UNIX building. To run CMake:

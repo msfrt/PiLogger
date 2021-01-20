@@ -11,6 +11,8 @@ set(CMAKE_CXX_EXTENSIONS OFF)
 # ensure that yaml-cpp is installed and include it's directories
 add_subdirectory(external/yaml-cpp) # This is one way of referencing another CMake project
 
+# add dbccpp for dbc decoding (be sure that it's dependencies are installed!)
+add_subdirectory(external/dbcppp)
 
 # add local repository libraries
 add_library(
