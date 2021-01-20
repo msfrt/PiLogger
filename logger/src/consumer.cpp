@@ -67,6 +67,12 @@ void* consumer(void* args){
         }
 
 
+
+
+        // free the can frame and the message
+        delete message->GetFrame();
+        delete message;
+
     }
 
     return nullptr;
