@@ -18,7 +18,8 @@ database:
 # NOTE: The SocketCAN interface must already be up, otherwise the logger may fail.
 # Check `ifconfig` to verify.
 interfaces:
-    - vcan0
+    vcan0: "t"
+
 
 
 # The size of the decoding queue. THe decoding queue is where CAN frames are 

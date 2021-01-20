@@ -1,6 +1,8 @@
 #include <iostream>
 #include <string>
 #include <vector>
+#include <unordered_map>
+
 #include <pthread.h>
 #include <signal.h>
 #include <semaphore.h>
@@ -12,6 +14,7 @@
 #include "Message.hpp"
 #include "ThreadableQueue.hpp"
 #include "monitor.hpp"
+#include "consumer.hpp"
 
 
 using namespace::std;
@@ -29,7 +32,7 @@ const int MAX_THREADS = 100;
 
 /// Global queue to be accessed by socket monitoring threads and
 /// decoder thread
-CThreadableMsgQueue<CMessage> decoder_queue;
+CThreadableMsgQueue<CMessage*> decoder_queue;
 
 /// global vector to store the pthread objects for monitoring threads
 pthread_t monitoring_threads[MAX_THREADS];
@@ -129,13 +132,19 @@ int main(int argc, char *argv[])
         exit ( 1 );
     }
 
-
-    // loop through the specified interfaces to grab the number of required monitoring threads
+    // loop through the specified interfaces to grab the number of required monitoring threads and DBC info
+    unordered_map<string, string> bus_dbc_name_map;  /// will hold the interface names and the respective dbcs
     if (config["interfaces"]) {
 
-        for (YAML::const_iterator iface = config["interfaces"].begin(); iface != config["interfaces"].end(); ++iface) {
+        auto ifaces_node = config["interfaces"];
+
+        for (YAML::const_iterator it=ifaces_node.begin(); it!=ifaces_node.end();++it) {
             monitor_count++;
-            if (LOGGER_DEBUG) std::cout << "Found " << iface->as<string>() << " in config." << endl;
+            string iface = it->first.as<std::string>();
+            if (LOGGER_DEBUG) std::cout << "Found " << iface << " in config." << endl;
+
+            // add the bus name and the dbc name to the map
+            bus_dbc_name_map[it->first.as<std::string>()] = it->second.as<std::string>();
         }
 
     } else {
@@ -157,16 +166,16 @@ int main(int argc, char *argv[])
 
 
     // loop through the configured CAN interfaces and create threads for their monotors
-    MonitorParams params_ary[monitor_count];
+    MonitorParams mon_params_ary[monitor_count];
     int current_thread_idx = 0;
     for (YAML::const_iterator iface = config["interfaces"].begin(); iface != config["interfaces"].end(); ++iface) {
 
         // populate the parameters for the current interface's monitoring thread
-        params_ary[current_thread_idx].iface_name = iface->as<string>();
-        params_ary[current_thread_idx].queue      = &decoder_queue;
+        mon_params_ary[current_thread_idx].iface_name = iface->first.as<string>();
+        mon_params_ary[current_thread_idx].queue      = &decoder_queue;
         
         // create the thread
-        if (pthread_create(&monitoring_threads[current_thread_idx], NULL, monitor, (void *)(&params_ary[current_thread_idx]))) {
+        if (pthread_create(&monitoring_threads[current_thread_idx], NULL, monitor, (void *)(&mon_params_ary[current_thread_idx]))) {
             sem_wait(&stdout_sem);
             cerr << "ERROR: Failed to create " <<  iface->as<string>() << " monitoring thread!" << endl;
             sem_post(&stdout_sem);
@@ -177,13 +186,31 @@ int main(int argc, char *argv[])
 
 
 
-
+    // create the consumer thread
+    ConsumerParams con_params;
+    con_params.bus_dbc_file_map = bus_dbc_name_map;
+    con_params.queue = &decoder_queue;
+    pthread_t consumer_thread;
+    if (pthread_create(&consumer_thread, NULL, consumer, (void *)(&con_params))) {
+        sem_wait(&stdout_sem);
+        cerr << "ERROR: Failed to create the consumer thread!" << endl;
+        sem_post(&stdout_sem);
+        exit( 1 );
+    }
 
 
 
 
     // at this point, we're done, join the producer threads after they've exited here
     join_threads(monitoring_threads, monitor_count);
+
+    // join the consumer
+    if (pthread_join(consumer_thread, NULL)) {
+        sem_wait(&stdout_sem);
+        cerr << "ERROR: Failed to join the consumer!" << endl;
+        sem_post(&stdout_sem);
+        return 2;
+    } 
 
 
     return 0;

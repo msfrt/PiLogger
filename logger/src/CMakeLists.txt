@@ -28,6 +28,11 @@ add_library(
     monitor.hpp
     monitor.cpp
 )
+add_library(
+    consumer
+    consumer.hpp
+    consumer.cpp
+)
 
    
 # compile
@@ -49,6 +54,7 @@ target_link_libraries(${PROJECT_NAME} PRIVATE Threads::Threads)
 target_link_libraries(${PROJECT_NAME} PRIVATE threadable_queue)
 target_link_libraries(${PROJECT_NAME} PRIVATE message)
 target_link_libraries(${PROJECT_NAME} PRIVATE monitor)
+target_link_libraries(${PROJECT_NAME} PRIVATE consumer)
 
 # copy the config file to the build directory
 configure_file("logger.conf.yaml" "logger.conf" COPYONLY)

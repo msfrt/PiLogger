@@ -107,15 +107,17 @@ void* monitor(void* args){
         nbytes = read(s, frame, sizeof(struct can_frame));
 
 
-        CMessage msg;  // create a message from this bus
-        msg.Timestamp();  // record the time
-        msg.SetFrame(frame);  // set the frame ptr
-        msg.SetBusName(&params.iface_name);  // set the bus name
+
+        CMessage* msg = new CMessage;  // create a message from this bus
+        msg->Timestamp();  // record the time
+        msg->SetFrame(frame);  // set the frame ptr
+        msg->SetBusName(&params.iface_name);  // set the bus name
         params.queue->Push(msg);  // launch it into the queue!
         
 
         if (LOGGER_DEBUG){
             sem_wait(&stdout_sem);
+            cout << params.iface_name  << " monitor - ";
             cout << hex << setw(3) << setfill('0') << frame->can_id << ": ";
             for (int i = 0; i < frame->can_dlc; i++)
                 printf("%02X ",frame->data[i]);

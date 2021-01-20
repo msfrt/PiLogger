@@ -1,13 +1,13 @@
 /**
- * \file monitor.hpp
+ * \file consumer.hpp
  *
  * \author Dave Yonkers
  * 
- * This is simply the definition of the CAN socket monitor function.
- * This function will be the "main" function of the socket monitoring threads.
+ * This thread will consume the CAN messages
  */
 
 #include <string>
+#include <unordered_map>
 
 #include <linux/can.h>
 #include <linux/can/raw.h>
@@ -15,15 +15,15 @@
 #include "Message.hpp"
 #include "ThreadableQueue.hpp"
 
+
 /**
  * This struct should be populated and passed to the monitor thread as a void*
  * object. It will then be downcast (oof) to obtain the parameters
  */
-struct MonitorParams {
-    std::string iface_name;
-    std::string dbc;
+struct ConsumerParams {
+    std::unordered_map<std::string, std::string> bus_dbc_file_map;
     CThreadableMsgQueue<CMessage*> *queue;
 };
 
-void* monitor(void*);
+void* consumer(void*);
 
