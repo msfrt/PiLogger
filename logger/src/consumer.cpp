@@ -54,6 +54,8 @@ void* consumer(void* args){
     auto &dbc_names_map = params.bus_dbc_file_map;
 
 
+    // load the DBC files -----
+
     std::unordered_map<Interface, std::unique_ptr<dbcppp::Network>> dbc_map;
 
     if (LOGGER_DEBUG) {
@@ -84,10 +86,8 @@ void* consumer(void* args){
 
         // move the unique ptr to the bus map
         dbc_map[pair.first] = std::move(net);
-        
 
     }
-
 
     if (LOGGER_DEBUG) {
         sem_wait(&stdout_sem);
@@ -96,6 +96,7 @@ void* consumer(void* args){
     }
     
 
+    // decode messages until asked to stop -----
 
     while (!stop_logging){
 
@@ -103,12 +104,12 @@ void* consumer(void* args){
         // pop a CMessage from the queue
         auto message = queue->Pop();
         auto frame = message->GetFrame();
-        auto iface_name = message->GetBusName();
+        auto iface = message->GetBusName();
         
 
         if (LOGGER_DEBUG){
             sem_wait(&stdout_sem);
-            cout << iface_to_string(iface_name) << " consumer - ";
+            cout << iface_to_string(iface) << " consumer - ";
             cout << hex << setw(3) << setfill('0') << frame->can_id << ": ";
             for (int i = 0; i < frame->can_dlc; i++)
                 printf("%02X ",frame->data[i]);
@@ -117,6 +118,15 @@ void* consumer(void* args){
         }
 
 
+        // get a pointer to the corresponsing message in the right DBC
+        const dbcppp::Message* msg = dbc_map[iface]->getMessageById(frame->can_id);
+
+        // only decode if the message was found
+        if (msg) {
+
+            std::cout << "Received Message: " << msg->getName() << endl;
+
+        }
 
 
         // free the can frame and the message
