@@ -15,6 +15,7 @@
 #include "ThreadableQueue.hpp"
 #include "monitor.hpp"
 #include "consumer.hpp"
+#include "interfaces.hpp"
 
 
 using namespace::std;
@@ -133,7 +134,7 @@ int main(int argc, char *argv[])
     }
 
     // loop through the specified interfaces to grab the number of required monitoring threads and DBC info
-    unordered_map<string, string> bus_dbc_name_map;  /// will hold the interface names and the respective dbcs
+    unordered_map<Interface, string> bus_dbc_name_map;  /// will hold the interface names and the respective dbcs
     if (config["interfaces"]) {
 
         auto ifaces_node = config["interfaces"];
@@ -144,7 +145,8 @@ int main(int argc, char *argv[])
             if (LOGGER_DEBUG) std::cout << "Found " << iface << " in config." << endl;
 
             // add the bus name and the dbc name to the map
-            bus_dbc_name_map[it->first.as<std::string>()] = it->second.as<std::string>();
+            Interface current_iface = string_to_iface(it->first.as<std::string>());
+            bus_dbc_name_map[current_iface] = it->second.as<std::string>();
         }
 
     } else {
@@ -171,7 +173,7 @@ int main(int argc, char *argv[])
     for (YAML::const_iterator iface = config["interfaces"].begin(); iface != config["interfaces"].end(); ++iface) {
 
         // populate the parameters for the current interface's monitoring thread
-        mon_params_ary[current_thread_idx].iface_name = iface->first.as<string>();
+        mon_params_ary[current_thread_idx].iface_name = string_to_iface(iface->first.as<string>());
         mon_params_ary[current_thread_idx].queue      = &decoder_queue;
         
         // create the thread

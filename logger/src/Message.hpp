@@ -17,6 +17,8 @@
 #include <linux/can.h>
 #include <linux/can/raw.h>
 
+#include "interfaces.hpp"
+
 /**
  * Class that simply holds a message frame, a bus indicator, and a timestamp
  */
@@ -38,15 +40,15 @@ public:
 
     /**
      * Sets the bus' name
-     * \param bus A pointer to the bus' string name (ptr to save copies)
+     * \param bus An interface enumeration beloning to the bus
      */
-    void SetBusName(std::string *bus) { mBusName = bus; }
+    void SetBusName(Interface iface) { mBusName = iface; }
 
     /**
      * Get the bus name
-     * \returns A pointer to the bus' name string
+     * \returns A the interface enum
      */
-    std::string *GetBusName() { return mBusName; }
+    Interface GetBusName() { return mBusName; }
 
 
     /**
@@ -65,10 +67,9 @@ public:
 
 private:
 
-    std::string *mBusName = nullptr;   /// the name of the bus, ex. vcan0
+    Interface mBusName;   /// the name of the bus, ex. vcan0
     struct can_frame *mFrame;   /// the actual frame recorded
     time_t mTime;   /// The time that the message was recieved
-    
 
 };
 

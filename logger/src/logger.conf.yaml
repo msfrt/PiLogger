@@ -18,7 +18,7 @@ database:
 # NOTE: The SocketCAN interface must already be up, otherwise the logger may fail.
 # Check `ifconfig` to verify.
 interfaces:
-    vcan0: "t"
+    vcan0: "CAN1.dbc"
 
 
 

@@ -62,7 +62,7 @@ void* monitor(void* args){
     int s;
     s = socket(PF_CAN, SOCK_RAW, CAN_RAW);
     if (LOGGER_DEBUG)
-        cout << "Socket created for " << params.iface_name << " with return value: " << s << endl;
+        cout << "Socket created for " << iface_to_string(params.iface_name) << " with return value: " << s << endl;
     if (s < 0) {
         cerr << "ERROR: could not open socket for " << params.iface_name << "!" << endl;
         return (void*)1;
@@ -71,9 +71,10 @@ void* monitor(void* args){
 
     // interface name and socket union
     struct ifreq ifr;
-    strncpy(ifr.ifr_name, params.iface_name.c_str(), params.iface_name.length() + 1);
+    string iface_str = iface_to_string(params.iface_name);
+    strncpy(ifr.ifr_name, iface_str.c_str(), iface_str.length() + 1);
 	if (ioctl(s, SIOCGIFINDEX, &ifr) < 0){
-        cerr << "ERROR: could not join " << params.iface_name << " to socket ID " << 
+        cerr << "ERROR: could not join " << iface_to_string(params.iface_name) << " to socket ID " << 
             s << "! Result: " << ifr.ifr_name << endl;
         CloseSocket(s);
         return (void*)1;
@@ -89,7 +90,7 @@ void* monitor(void* args){
 
     if (bind(s, (struct sockaddr *)&addr, sizeof(addr)) < 0) {
         cerr << "ERROR: could not bind socket " << s << " to interface " << 
-            params.iface_name << " (ifindex " << ifr.ifr_ifindex << ")" << endl;
+            iface_to_string(params.iface_name) << " (ifindex " << ifr.ifr_ifindex << ")" << endl;
         CloseSocket(s);
         return (void*)1;
     }
@@ -111,7 +112,7 @@ void* monitor(void* args){
         CMessage* msg = new CMessage;  // create a message from this bus
         msg->Timestamp();  // record the time
         msg->SetFrame(frame);  // set the frame ptr
-        msg->SetBusName(&params.iface_name);  // set the bus name
+        msg->SetBusName(params.iface_name);  // set the bus name
         params.queue->Push(msg);  // launch it into the queue!
         
 

@@ -14,6 +14,7 @@
 
 #include "Message.hpp"
 #include "ThreadableQueue.hpp"
+#include "interfaces.hpp"
 
 
 /**
@@ -21,7 +22,7 @@
  * object. It will then be downcast (oof) to obtain the parameters
  */
 struct ConsumerParams {
-    std::unordered_map<std::string, std::string> bus_dbc_file_map;
+    std::unordered_map<Interface, std::string> bus_dbc_file_map;
     CThreadableMsgQueue<CMessage*> *queue;
 };
 

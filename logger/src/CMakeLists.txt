@@ -12,7 +12,7 @@ set(CMAKE_CXX_EXTENSIONS OFF)
 add_subdirectory(external/yaml-cpp) # This is one way of referencing another CMake project
 
 # add dbccpp for dbc decoding (be sure that it's dependencies are installed!)
-add_subdirectory(external/dbcppp)
+# add_subdirectory(external/dbcppp)
 
 # add local repository libraries
 add_library(
@@ -35,6 +35,12 @@ add_library(
     consumer.hpp
     consumer.cpp
 )
+add_library(
+    interfaces
+    interfaces.hpp
+    interfaces.cpp
+)
+
 
    
 # compile
@@ -57,6 +63,9 @@ target_link_libraries(${PROJECT_NAME} PRIVATE threadable_queue)
 target_link_libraries(${PROJECT_NAME} PRIVATE message)
 target_link_libraries(${PROJECT_NAME} PRIVATE monitor)
 target_link_libraries(${PROJECT_NAME} PRIVATE consumer)
+target_link_libraries(${PROJECT_NAME} PRIVATE interfaces)
+target_link_libraries(${PROJECT_NAME} PRIVATE dbcppp)
+
 
 # copy the config file to the build directory
 configure_file("logger.conf.yaml" "logger.conf" COPYONLY)

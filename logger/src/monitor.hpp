@@ -14,13 +14,14 @@
 
 #include "Message.hpp"
 #include "ThreadableQueue.hpp"
+#include "interfaces.hpp"
 
 /**
  * This struct should be populated and passed to the monitor thread as a void*
  * object. It will then be downcast (oof) to obtain the parameters
  */
 struct MonitorParams {
-    std::string iface_name;
+    Interface iface_name;
     std::string dbc;
     CThreadableMsgQueue<CMessage*> *queue;
 };
