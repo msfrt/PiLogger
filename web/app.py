@@ -26,7 +26,21 @@ def success():
 
     send_message(ID, data)
     return render_template("success.html")
+
+@app.route("/success2")
+def success2():
+    USER_10_ID = 0x2C6
+    switch = request.args.get("switch")
+    delay = request.args.get("delay")
     
+    if switch == "on":
+        for i in range(1, 5):
+            value = request.args.get(f"myRange{i}")
+            print(value)
+        
+        #send_message(USER_10_ID, data)
+    
+    return render_template("success.html")
 
 def send_message(ID, data):
     bus = can.interface.Bus(bustype=bustype, channel=channel)
@@ -36,4 +50,4 @@ def send_message(ID, data):
     bus.send(msg)
     
 if __name__ == "__main__":
-    app.run()
+    app.run(debug=True, use_reloader=False)

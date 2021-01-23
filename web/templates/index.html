@@ -1,21 +1,5 @@
 {% extends "layout.html" %}
-
-{% block style %}
-.byte_box {
-    height: 45px;
-    width: 45px;
-    font-size: 25px;
-    text-align: center;
-    border: 1px solid #000000;
-}
-input[type=text]::-webkit-inner-spin-button,
-input[type=text]::-webkit-outer-spin-button {
-  -webkit-appearance: none;
-  margin: 0;
-}
-{% endblock %}
-
-
+    
 {% block script %}
 function getCodeBoxElement(index) {
   return document.getElementById('data' + index);
@@ -47,26 +31,85 @@ function onFocusEvent(index) {
 {% endblock %}
 
 {% block body %}
-    <form action="/success">
-        <p>
-            <label for="id">ID:</label>
-            <input name="id" type="text">
-        </p>
-        <p>
-            <label for="data0">Message (Hexadecimal):</label>
-            <div>
-                <input class="byte_box" id="data1" name="data1" type="text" maxlength="2" onkeyup="onKeyUpEvent(1, event)" onfocus="onFocusEvent(1)">
-                <input class="byte_box" id="data2" name="data2" type="text" maxlength="2" onkeyup="onKeyUpEvent(2, event)" onfocus="onFocusEvent(2)">
-                <input class="byte_box" id="data3" name="data3" type="text" maxlength="2" onkeyup="onKeyUpEvent(3, event)" onfocus="onFocusEvent(3)">
-                <input class="byte_box" id="data4" name="data4" type="text" maxlength="2" onkeyup="onKeyUpEvent(4, event)" onfocus="onFocusEvent(4)">
-                <input class="byte_box" id="data5" name="data5" type="text" maxlength="2" onkeyup="onKeyUpEvent(5, event)" onfocus="onFocusEvent(5)">
-                <input class="byte_box" id="data6" name="data6" type="text" maxlength="2" onkeyup="onKeyUpEvent(6, event)" onfocus="onFocusEvent(6)">
-                <input class="byte_box" id="data7" name="data7" type="text" maxlength="2" onkeyup="onKeyUpEvent(7, event)" onfocus="onFocusEvent(7)">
-                <input class="byte_box" id="data8" name="data8" type="text" maxlength="2" onkeyup="onKeyUpEvent(8, event)" onfocus="onFocusEvent(8)">
+    <p style="text-align:center;"> MSU Formula Racing Team <br/> Welcome! </p> 
+    <div class="box">
+        <form action="/success">
+            <p>Send a message manually here</p>
+            <p>
+                <label for="id">ID:</label>
+                <input name="id" type="text">
+            </p>
+            <p>
+                <label for="data0">Message (Hexadecimal):</label>
+                <div>
+                    <input class="byte_box" id="data1" name="data1" type="text" maxlength="2" onkeyup="onKeyUpEvent(1, event)" onfocus="onFocusEvent(1)">
+                    <input class="byte_box" id="data2" name="data2" type="text" maxlength="2" onkeyup="onKeyUpEvent(2, event)" onfocus="onFocusEvent(2)">
+                    <input class="byte_box" id="data3" name="data3" type="text" maxlength="2" onkeyup="onKeyUpEvent(3, event)" onfocus="onFocusEvent(3)">
+                    <input class="byte_box" id="data4" name="data4" type="text" maxlength="2" onkeyup="onKeyUpEvent(4, event)" onfocus="onFocusEvent(4)">
+                    <input class="byte_box" id="data5" name="data5" type="text" maxlength="2" onkeyup="onKeyUpEvent(5, event)" onfocus="onFocusEvent(5)">
+                    <input class="byte_box" id="data6" name="data6" type="text" maxlength="2" onkeyup="onKeyUpEvent(6, event)" onfocus="onFocusEvent(6)">
+                    <input class="byte_box" id="data7" name="data7" type="text" maxlength="2" onkeyup="onKeyUpEvent(7, event)" onfocus="onFocusEvent(7)">
+                    <input class="byte_box" id="data8" name="data8" type="text" maxlength="2" onkeyup="onKeyUpEvent(8, event)" onfocus="onFocusEvent(8)">
+                </div>
+            </p>
+            <p>
+                <input type="submit">
+            </p>
+        </form>
+    </div>
+    <div class="box">
+        <form action="/success2">
+            <p>USER_10</p>
+            <div class="form-check form-switch">
+              <input class="form-check-input" type="checkbox" id="flexSwitchCheckDefault" name="switch">
+              <label class="form-check-label" for="flexSwitchCheckDefault">Enable Message</label>
             </div>
-        </p>
-        <p>
+            <input class="form-control" name="delay" type="text" placeholder="Send delay (ms)" aria-label="default input example">
+            <div style="margin:20px">
+                <div class="slidecontainer">
+                  <input type="range" min="1" max="100" value="50" class="slider" id="myRange1" name="myRange1" oninput="display(this.value, this.id)">
+                </div>
+                <span>Left: </span>
+                <span id="display1">50</span>
+            </div>
+            
+            <div style="margin:20px">
+                <div class="slidecontainer">
+                  <input type="range" min="1" max="100" value="50" class="slider" id="myRange2" name="myRange2" oninput="display(this.value, this.id)">
+                </div>
+                <span>Right: </span>
+                <span id="display2">50</span>
+            </div>
+            
+            <div style="margin:20px">
+                <div class="slidecontainer">
+                  <input type="range" min="1" max="100" value="50" class="slider" id="myRange3" name="myRange3" oninput="display(this.value, this.id)">
+                </div>
+                <span>Water Pump: </span>
+                <span id="display3">50</span>
+            </div>
+            
+            <div style="margin:20px">
+                <div class="slidecontainer">
+                  <input type="range" min="1" max="100" value="50" class="slider" id="myRange4" name="myRange4" oninput="display(this.value, this.id)">
+                </div>
+                <span>Brake: </span>
+                <span id="display4">50</span>
+            </div>
             <input type="submit">
-        </p>
-    </form>
+        </form>
+
+    </div>
+    
+    <script>
+        function display(val, id) {
+          var str = id;
+          var c = str.charAt(str.length - 1)
+          var val_id = "display" + c
+          document.getElementById(val_id).innerHTML = val;
+        }
+    </script>
+
+    
+    
 {% endblock %}
