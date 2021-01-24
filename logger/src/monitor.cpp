@@ -118,7 +118,7 @@ void* monitor(void* args){
 
         if (LOGGER_DEBUG){
             sem_wait(&stdout_sem);
-            cout << params.iface_name  << " monitor - ";
+            cout << iface_to_string(params.iface_name)  << "  monitor - ";
             cout << hex << setw(3) << setfill('0') << frame->can_id << ": ";
             for (int i = 0; i < frame->can_dlc; i++)
                 printf("%02X ",frame->data[i]);

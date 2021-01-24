@@ -107,6 +107,7 @@ void* consumer(void* args){
         auto iface = message->GetBusName();
         
 
+        // print the frame data if in debug mode
         if (LOGGER_DEBUG){
             sem_wait(&stdout_sem);
             cout << iface_to_string(iface) << " consumer - ";
@@ -117,25 +118,28 @@ void* consumer(void* args){
             sem_post(&stdout_sem);
         }
 
+        if (dbc_map[iface]){
 
-        // get a pointer to the corresponsing message in the right DBC
-        const dbcppp::Message* msg = dbc_map[iface]->getMessageById(frame->can_id);
+            // get a pointer to the corresponsing message in the right DBC
+            const dbcppp::Message* msg = dbc_map[iface]->getMessageById(frame->can_id);
 
-        // only decode if the message was found
-        if (msg) {
+            // only decode if the message was found
+            if (msg) {
 
-            std::cout << "Received Message: " << msg->getName() << endl;
+                std::cout << "Received Message: " << msg->getName() << endl;
 
-        }
-
-        msg->forEachSignal([&](const dbcppp::Signal& sig){
-            const dbcppp::Signal* mux_sig = msg->getMuxSignal();
-            if (sig.getMultiplexerIndicator() != dbcppp::Signal::Multiplexer::MuxValue ||
-                (mux_sig && mux_sig->decode(frame->data) == sig.getMultiplexerSwitchValue()))
-            {
-                std::cout << "\t" << sig.getName() << "=" << sig.rawToPhys(sig.decode(frame->data)) << sig.getUnit() << "\n";
             }
-        });
+
+            msg->forEachSignal([&](const dbcppp::Signal& sig){
+                const dbcppp::Signal* mux_sig = msg->getMuxSignal();
+                if (sig.getMultiplexerIndicator() != dbcppp::Signal::Multiplexer::MuxValue ||
+                    (mux_sig && mux_sig->decode(frame->data) == sig.getMultiplexerSwitchValue()))
+                {
+                    std::cout << "\t" << sig.getName() << "=" << sig.rawToPhys(sig.decode(frame->data)) << sig.getUnit() << "\n";
+                }
+            });
+
+        } // end if (dbc_map[iface])
 
 
         // free the can frame and the message

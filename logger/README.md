@@ -21,7 +21,7 @@
 
 # Build
 
-To use the logger, you must build it first. This is accomplished using [CMake](https://cmake.org). If CMake is not installed, you must install it, either by downloading the source and building, or simply running `sudo apt-get install cmake` (easiest).
+To use the logger, you must build it first. This is accomplished using [CMake](https://cmake.org). If CMake is not installed, you must install it, either by downloading the source and building, or simply running `sudo apt-get install cmake` (easiest). Downloading via the package manager may not install the latest version, so I reccomend building by source. Instructions for doing so can be found [here](https://cmake.org/install/).
 
 ## Dependencies
 
