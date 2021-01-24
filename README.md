@@ -55,3 +55,23 @@ If looking for a particular message on a busy bus, you can combine `candump` wit
 ```bash
 candump vcan0 | grep 123
 ```
+
+# InfluxDB
+
+[InfluxDB v2.0](https://influxdata.com) is the timeseries database used to store all data. It is vital that this runs, otherwise nothing will work
+
+## Installation
+
+Installation instructions are pretty straightforward [on their website](https://docs.influxdata.com/influxdb/v2.0/get-started/). The only addendum here is that we'd like for the database deamon to start up on boot, so we'll need to create a service for it after influx is installed
+
+### Creating an InfluxDB service
+
+These instructions are adapted from [this site](http://blog.lemminger.eu/run-influxdb-2-0-as-a-service/).
+
+1. Create an influxdb user: `sudo useradd -rs /bin/false influxdb`
+1. Create a user folder: `sudo mkdir /home/influxdb; chown influxdb /home/influxdb`
+1. Install the services in the services directory of this repository by running the script `sudo ./install-services.sh`
+
+The influxdb2 service will now start on boot, and all influx files will be stored in `/home/influxdb`. If you'd like to start it immediately after installing, run `sudo systemctl start influxdb2.service`
+
+
