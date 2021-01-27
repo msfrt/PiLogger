@@ -45,8 +45,7 @@ def success2():
     pump = request.args.get("myRange3")
     brake =request.args.get("myRange4")
     
-    data = user10_msg.encode({'USER_fanLeftOverride':left, 'USER_fanRightOverride':right, 
-                              'USER_wpOverride':pump, 'USER_brakeLightOverride':brake})
+    data = user10_msg.encode({'USER_fanLeftOverride':left, 'USER_fanRightOverride':right, 'USER_wpOverride':pump, 'USER_brakeLightOverride':brake})
     
     msg = can.Message(arbitration_id=user10_msg.frame_id, data=data)
     bus.send(msg)
