@@ -40,10 +40,10 @@ def success2():
     switch = request.args.get("switch")
     delay = request.args.get("delay")
     
-    left = request.args.get("myRange1")
-    right = request.args.get("myRange2")
-    pump = request.args.get("myRange3")
-    brake =request.args.get("myRange4")
+    left = int(request.args.get("myRange1"))
+    right = int(request.args.get("myRange2"))
+    pump = int(request.args.get("myRange3"))
+    brake = int(request.args.get("myRange4"))
     
     data = user10_msg.encode({'USER_fanLeftOverride':left, 'USER_fanRightOverride':right, 'USER_wpOverride':pump, 'USER_brakeLightOverride':brake})
     
