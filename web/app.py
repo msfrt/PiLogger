@@ -29,6 +29,7 @@ def update(message):
 
 @socketio.on('disconnect')
 def terminate():
+    print('Client disconnected')
     for i in range(3):
         user10_message(0, 0, 0, 0)
 
