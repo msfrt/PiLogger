@@ -25,19 +25,12 @@ def index():
 
 @socketio.on('update')
 def update(message):
-    left = int(message['left'])
-    right = int(message['right'])
-    pump = int(message['pump'])
-    brake = int(message['brake'])
-    
-    print('Left:', left)
-    print('Right:', right)
-    print('Water Pump:', pump)
-    print('Brake:', brake)
-    
-    data = user10_msg.encode({'USER_fanLeftOverride':left, 'USER_fanRightOverride':right, 'USER_wpOverride':pump, 'USER_brakeLightOverride':brake})
-    msg = can.Message(arbitration_id=user10_msg.frame_id, data=data)
-    bus.send(msg)
+    user10_message(message['left'], message['right'], message['pump'], message['brake'])
+
+@socketio.on('disconnect')
+def terminate():
+    for i in range(3):
+        user10_message(0, 0, 0, 0)
 
 @app.route("/success")
 def success():
@@ -58,18 +51,7 @@ def success():
 
 @app.route("/success2")
 def success2():
-    switch = request.args.get("switch")
-    delay = request.args.get("delay")
-    
-    left = int(request.args.get("myRange1"))
-    right = int(request.args.get("myRange2"))
-    pump = int(request.args.get("myRange3"))
-    brake = int(request.args.get("myRange4"))
-    
-    data = user10_msg.encode({'USER_fanLeftOverride':left, 'USER_fanRightOverride':right, 'USER_wpOverride':pump, 'USER_brakeLightOverride':brake})
-    
-    msg = can.Message(arbitration_id=user10_msg.frame_id, data=data)
-    bus.send(msg)
+    user10_message(request.args.get("myRange1"), request.args.get("myRange2"), request.args.get("myRange3"), request.args.get("myRange4"))
     
     return render_template("success.html")
 
@@ -77,6 +59,21 @@ def send_message(ID, data):
     msg = can.Message(arbitration_id=int(ID),
                       data= [int(x, 16) for x in data],
                       is_extended_id=True)
+    bus.send(msg)
+    
+def user10_message(left, right, pump, brake):
+    left = int(left)
+    right = int(right)
+    pump = int(pump)
+    brake = int(brake)
+    
+    print('Left:', left)
+    print('Right:', right)
+    print('Water Pump:', pump)
+    print('Brake:', brake)
+    
+    data = user10_msg.encode({'USER_fanLeftOverride':left, 'USER_fanRightOverride':right, 'USER_wpOverride':pump, 'USER_brakeLightOverride':brake})
+    msg = can.Message(arbitration_id=user10_msg.frame_id, data=data)
     bus.send(msg)
     
 if __name__ == "__main__":
