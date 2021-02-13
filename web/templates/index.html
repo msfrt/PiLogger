@@ -64,37 +64,37 @@ function onFocusEvent(index) {
               <input class="form-check-input" type="checkbox" id="flexSwitchCheckDefault" name="switch">
               <label class="form-check-label" for="flexSwitchCheckDefault">Enable Message</label>
             </div>
-            <input class="form-control" name="delay" type="text" placeholder="Send delay (ms)" aria-label="default input example">
+            <input name="delay" type="number" min="0" max="60000" value="1000" id="delay">
             <div style="margin:20px">
                 <div class="slidecontainer">
-                  <input type="range" min="1" max="100" value="50" class="slider" id="myRange1" name="myRange1" oninput="display(this.value, this.id)">
+                  <input type="range" min="0" max="100" value="0" class="slider" id="myRange1" name="myRange1" oninput="display(this.value, this.id)">
                 </div>
                 <span>Left: </span>
-                <span id="display1">50</span>
+                <span id="display1">0</span>
             </div>
             
             <div style="margin:20px">
                 <div class="slidecontainer">
-                  <input type="range" min="1" max="100" value="50" class="slider" id="myRange2" name="myRange2" oninput="display(this.value, this.id)">
+                  <input type="range" min="0" max="100" value="0" class="slider" id="myRange2" name="myRange2" oninput="display(this.value, this.id)">
                 </div>
                 <span>Right: </span>
-                <span id="display2">50</span>
+                <span id="display2">0</span>
             </div>
             
             <div style="margin:20px">
                 <div class="slidecontainer">
-                  <input type="range" min="1" max="100" value="50" class="slider" id="myRange3" name="myRange3" oninput="display(this.value, this.id)">
+                  <input type="range" min="0" max="100" value="0" class="slider" id="myRange3" name="myRange3" oninput="display(this.value, this.id)">
                 </div>
                 <span>Water Pump: </span>
-                <span id="display3">50</span>
+                <span id="display3">0</span>
             </div>
             
             <div style="margin:20px">
                 <div class="slidecontainer">
-                  <input type="range" min="1" max="100" value="50" class="slider" id="myRange4" name="myRange4" oninput="display(this.value, this.id)">
+                  <input type="range" min="0" max="100" value="0" class="slider" id="myRange4" name="myRange4" oninput="display(this.value, this.id)">
                 </div>
                 <span>Brake: </span>
-                <span id="display4">50</span>
+                <span id="display4">0</span>
             </div>
             <input type="submit">
         </form>
@@ -110,6 +110,32 @@ function onFocusEvent(index) {
         }
     </script>
 
+    <script type="text/javascript" charset="utf-8">
+        var socket = io();
+        var switchStatus = "off";
+        var sending;
+        
+        function update() {
+            socket.emit('update',
+            {'left': $('#myRange1').val(),
+            'right': $('#myRange2').val(),
+            'pump': $('#myRange3').val(),
+            'brake': $('#myRange4').val()}
+            );
+        }
+    
+        $('#flexSwitchCheckDefault').on('change', function() {
+            if (switchStatus == "off") {
+                switchStatus = "on"
+                sending = setInterval(update, $('#delay').val());
+            } else {
+                switchStatus = "off"
+                clearInterval(sending)
+            }
+
+        })
+
+    </script>
     
     
 {% endblock %}

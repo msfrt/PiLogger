@@ -1,8 +1,13 @@
 from flask import Flask, render_template, request
+# pip install flask-socketio
+# pip install gevent-websocket
+from flask_socketio import SocketIO
 import can
 import cantools
 
 app = Flask(__name__)
+app.config['SECRET_KEY'] = 'secret!'
+socketio = SocketIO(app,cors_allowed_origins="*")
 
 # Set up bus
 bustype = 'socketcan'
@@ -17,6 +22,22 @@ user10_msg = db.get_message_by_name("USER_10")
 @app.route("/")
 def index():
     return render_template("index.html")
+
+@socketio.on('update')
+def update(message):
+    left = int(message['left'])
+    right = int(message['right'])
+    pump = int(message['pump'])
+    brake = int(message['brake'])
+    
+    print('Left:', left)
+    print('Right:', right)
+    print('Water Pump:', pump)
+    print('Brake:', brake)
+    
+    data = user10_msg.encode({'USER_fanLeftOverride':left, 'USER_fanRightOverride':right, 'USER_wpOverride':pump, 'USER_brakeLightOverride':brake})
+    msg = can.Message(arbitration_id=user10_msg.frame_id, data=data)
+    bus.send(msg)
 
 @app.route("/success")
 def success():
@@ -59,4 +80,4 @@ def send_message(ID, data):
     bus.send(msg)
     
 if __name__ == "__main__":
-    app.run(debug=True, use_reloader=False)
+    socketio.run(app)
