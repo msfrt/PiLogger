@@ -15,9 +15,8 @@ pip install gevent-websocket
 ```
 
 Version inter-compatibility is highly limited, which may lead to several difficulties
-while running the web application. Visit the [version compatibility]
-(https://flask-socketio.readthedocs.io/en/latest/#version-compatibility) if
-encountering such errors.
+while running the web application. Visit the [version compatibility](https://flask-socketio.readthedocs.io/en/latest/#version-compatibility)
+if encountering such errors.
 
 The application uses [can_data/CAN2.dbc](https://github.com/msfrt/PiLogger/blob/web/web/can_data/CAN2.dbc)
 as database to extract specifications of signals and messages.
@@ -31,7 +30,7 @@ flask run --host=0.0.0.0
 ```
 
 ## Usage
-Once set-up, access the web application [here](http://147.92.111.86:5000/)
+Once set-up, access the web application [here](http://147.92.111.86:5000/).
 
 ### Sending a Message Manually
 Input the ID of any message you want to send to the bus, and include the encoded
@@ -48,10 +47,10 @@ to show in the display. Then click send.
 ### USER_10 Message
 I.e., set the left and right fan, water pump, and brake overrides.
 By being enabled, the USER_10 message at the set values is sent over the period
-indicated by the input box (in ms). Modify the values concurrently by dragging the sliders
+provided in the input box (defaulted at 1000 ms). Modify the values concurrently by dragging the sliders
 to the desired ones.
 
-### Specifications
+#### Note
 The values sent by the message change synchronously as the slider values
 are updated, even while sending is enabled. Nonetheless, the period over
 which the message is sent will not update if it's changed while sending is enabled.
