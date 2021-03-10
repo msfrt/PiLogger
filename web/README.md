@@ -6,7 +6,7 @@ messages through the interactive and user-friendly panel.
 The web panel is ran through the Flask web framework, which comes bundled to
 the default Python installation.
 
-In addition, the application depends on several web sockets to communicate
+Additionally, the application depends on several web sockets to communicate
 with the server. Install them using:
 
 ```bash
@@ -18,10 +18,29 @@ Version inter-compatibility is highly limited, which may lead to several difficu
 while running the web application. Visit the [version compatibility](https://flask-socketio.readthedocs.io/en/latest/#version-compatibility)
 if encountering such errors.
 
-The application uses [can_data/CAN2.dbc](https://github.com/msfrt/PiLogger/blob/web/web/can_data/CAN2.dbc)
-as database to extract specifications of signals and messages.
+The application uses [this](https://github.com/msfrt/Electrical-SR20/tree/master/DBCs)
+CAN file as database to extract specifications of signals and messages. The python-can
+and cantools libraries handle the CAN data and message manipulation. Install them using:
 
-## Server Set-Up
+```bash
+pip install python-can
+pip install cantools
+```
+
+## Setting-Up
+### Configuration
+The location of the CAN DBC file used to read messages and signals from is stored
+in DBC_FILE global at [app.py](/app.py) -it currently points to the [CAN2.dbc](https://github.com/msfrt/Electrical-SR20/tree/master/DBCs) located in the SR-20 master branch-.
+
+The global variables BUSTYPE and CHANNEL set the configuration for the CAN's interface
+(declared at [app.py](/app.py)). Configure them to match the bus specifications:
+
+```bash
+BUSTYPE = 'socketcan'
+CHANNEL = 'vcan0'
+```
+ 
+### Server
 In order to set-up the web server, run the following command in the folder
 where the app.py file is located at the RasPi.
 
@@ -30,7 +49,9 @@ flask run --host=0.0.0.0
 ```
 
 ## Usage
-Once set-up, access the web application [here](http://147.92.111.86:5000/).
+Once set-up, access the web application [<hostname>:5000](/)
+The web application will display the following panel:
+![](images/panel.png 'Overrides Application Panel')
 
 ### Sending a Message Manually
 Input the ID of any message you want to send to the bus, and include the encoded
@@ -50,10 +71,9 @@ By being enabled, the USER_10 message at the set values is sent over the period
 provided in the input box (defaulted at 1000 ms). Modify the values concurrently by dragging the sliders
 to the desired ones.
 
-#### Note
-The values sent by the message change synchronously as the slider values
-are updated, even while sending is enabled. Nonetheless, the period over
-which the message is sent will not update if it's changed while sending is enabled.
+***Note:*** _The values sent by the message change synchronously as the slider values_
+_are updated, even while sending is enabled. Nonetheless, the period over_
+_which the message is sent will not update if it's changed while sending is enabled._
 
-In order to avoid unexpected behavior, if the client's connection is interrupted or lost,
-the server will be notified and all values will be set to 0 automatically.
+_In order to avoid unexpected behavior, if the client's connection is interrupted or lost,_
+_the server will be notified and all values will be set to 0 automatically._

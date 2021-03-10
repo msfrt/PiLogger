@@ -1,25 +1,26 @@
 from flask import Flask, render_template, request
-# pip install flask-socketio
-# pip install gevent-websocket
 from flask_socketio import SocketIO
 import can
 import cantools
 
-app = Flask(__name__)
-app.config['SECRET_KEY'] = 'secret!'
-socketio = SocketIO(app,cors_allowed_origins="*")
-
 # Set up bus
-bustype = 'socketcan'
-channel = 'vcan0'
+BUSTYPE = 'socketcan'
+CHANNEL = 'vcan0'
+bus = can.interface.Bus(bustype=BUSTYPE, channel=CHANNEL)
 
-bus = can.interface.Bus(bustype=bustype, channel=channel)
+# DBC file
+DBC_FILE = "../../Electrical-SR20/DBCs/CAN2.dbc"
 
-# Get data from CAN2
-db = cantools.database.load_file("can_data/CAN2.dbc")
+# Get data from DBC file
+db = cantools.database.load_file(DBC_FILE)
 user10_msg = db.get_message_by_name("USER_10")
 user11_msg = db.get_message_by_name("USER_11")
 user12_msg = db.get_message_by_name("USER_12")
+
+
+app = Flask(__name__)
+app.config['SECRET_KEY'] = 'secret!'
+socketio = SocketIO(app,cors_allowed_origins="*")
 
 @app.route("/")
 def index():
