@@ -39,7 +39,7 @@ The global variables BUSTYPE and CHANNEL set the configuration for the CAN's int
 BUSTYPE = 'socketcan'
 CHANNEL = 'vcan0'
 ```
- 
+
 ### Server
 In order to set-up the web server, run the following command in the folder
 where the app.py file is located at the RasPi.
@@ -49,7 +49,7 @@ flask run --host=0.0.0.0
 ```
 
 ## Usage
-Once set-up, access the web application [<hostname>:5000](/)
+Once set-up, access the web application [\<hostname\>:5000]()
 The web application will display the following panel:
 ![](images/panel.png 'Overrides Application Panel')
 
