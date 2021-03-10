@@ -30,6 +30,8 @@
 
 #include "consumer.hpp"
 
+#include "influxdb.hpp"
+
 using namespace std;
 
 extern const bool LOGGER_DEBUG;
@@ -128,18 +130,30 @@ void* consumer(void* args){
 
                 std::cout << "Received Message: " << msg->getName() << endl;
 
+                msg->forEachSignal([&](const dbcppp::Signal& sig){
+                    const dbcppp::Signal* mux_sig = msg->getMuxSignal();
+                    if (sig.getMultiplexerIndicator() != dbcppp::Signal::Multiplexer::MuxValue ||
+                        (mux_sig && mux_sig->decode(frame->data) == sig.getMultiplexerSwitchValue()))
+                    {
+                        std::cout << "\t" << sig.getName() << "=" << sig.rawToPhys(sig.decode(frame->data)) << sig.getUnit() << "\n";
+                    }
+                });
+
             }
 
-            msg->forEachSignal([&](const dbcppp::Signal& sig){
-                const dbcppp::Signal* mux_sig = msg->getMuxSignal();
-                if (sig.getMultiplexerIndicator() != dbcppp::Signal::Multiplexer::MuxValue ||
-                    (mux_sig && mux_sig->decode(frame->data) == sig.getMultiplexerSwitchValue()))
-                {
-                    std::cout << "\t" << sig.getName() << "=" << sig.rawToPhys(sig.decode(frame->data)) << sig.getUnit() << "\n";
-                }
-            });
-
         } // end if (dbc_map[iface])
+
+
+        influxdb_cpp::server_info si("localhost", 8086, "spartans", "yonkers4", "Intel Core i7");
+        influxdb_cpp::builder()
+            .meas("foo")
+            .tag("k", "v")
+            .tag("x", "y")
+            .field("x", 10)
+            .field("y", 10.3, 2)
+            .field("z", 10.3456)
+            .field("b", !!10)
+            .post_http(si);
 
 
         // free the can frame and the message

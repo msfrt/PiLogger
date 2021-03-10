@@ -14,6 +14,7 @@ add_subdirectory(external/yaml-cpp) # This is one way of referencing another CMa
 # add dbccpp for dbc decoding (be sure that it's dependencies are installed!)
 # add_subdirectory(external/dbcppp)
 
+
 # add local repository libraries
 add_library(
     threadable_queue
@@ -42,9 +43,12 @@ add_library(
 )
 
 
+
+
    
 # compile
-add_executable(${PROJECT_NAME} main.cpp)
+add_executable(${PROJECT_NAME}  main.cpp)
+
 
 # link yaml-cpp
 target_link_libraries(
