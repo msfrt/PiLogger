@@ -2,6 +2,9 @@
 	"folders": [
 		{
 			"path": "../.."
+		},
+		{
+			"path": "../../../Electrical-SR20"
 		}
 	],
 	"settings": {

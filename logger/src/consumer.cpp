@@ -30,7 +30,7 @@
 
 #include "consumer.hpp"
 
-#include "influxdb.hpp"
+#include "../src/external/influxdb-cpp-2/influxdb.hpp"
 
 using namespace std;
 
@@ -41,11 +41,10 @@ extern sem_t stdout_sem;
 
 
 /**
- * CAN socket monitoring thread main function.
+ * CAN socket consuming thread main function.
  * 
- * This thread simply monitors the CAN socket. When a message is recieved, it's
- * thrown into a CMessage, which records the time and the interface name. The
- * CMessage is then thrown into the decoding queue for further processing.
+ * This thread pops a CAN frame from the decoding queue whenever it is available,
+ * decodes it, then adds it to a batch write for the database.
  */
 void* consumer(void* args){
 
@@ -54,6 +53,7 @@ void* consumer(void* args){
 
     auto queue = params.queue;
     auto &dbc_names_map = params.bus_dbc_file_map;
+    auto dbinfo = params.dbinfo;
 
 
     // load the DBC files -----
@@ -143,17 +143,6 @@ void* consumer(void* args){
 
         } // end if (dbc_map[iface])
 
-
-        influxdb_cpp::server_info si("localhost", 8086, "spartans", "yonkers4", "Intel Core i7");
-        influxdb_cpp::builder()
-            .meas("foo")
-            .tag("k", "v")
-            .tag("x", "y")
-            .field("x", 10)
-            .field("y", 10.3, 2)
-            .field("z", 10.3456)
-            .field("b", !!10)
-            .post_http(si);
 
 
         // free the can frame and the message

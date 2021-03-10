@@ -9,20 +9,23 @@
 database:
     host: localhost
     port: 8086
-    user: sparty
-    pass: gogreen
+    org: spartans
+    bucket: SR-20
+    token: "dKwj4MP2P1Kf82UQQsP3nieTElZa6CbvNt03R31XQCZSLrtAJTcaOZ6D4g0c8EGkak-ZiIzM4DpsPgAxmuN8-g=="
+
+
 
 
 # The CAN interfaces to log, as well as their respective DBCs.
 #
 # NOTE: The SocketCAN interface must already be up, otherwise the logger may fail.
-# Check `ifconfig` to verify.
+# Check `ifconfig` command o verify.
 interfaces:
-    vcan0: "CAN1.dbc"
+    vcan0: "/home/sparty/Electrical-SR20/DBCs/CAN1.dbc"
 
 
 
-# The size of the decoding queue. THe decoding queue is where CAN frames are 
+# The size of the decoding queue. The decoding queue is where CAN frames are 
 # congregated after read from a socket. The sizing requirement depends on your bus
 # load, buses logged, and the number of messages to decode. It is limited by
 # computer hardware (most noteably memory).

@@ -133,6 +133,35 @@ int main(int argc, char *argv[])
         exit ( 1 );
     }
 
+
+    // Get the database information
+    DBInfo dbinfo;
+    if (config["database"]) {
+
+        auto dbinfo_node = config["database"];
+
+        try {
+            dbinfo.host = dbinfo_node["host"].as<std::string>();
+            dbinfo.port = dbinfo_node["port"].as<int>();
+            dbinfo.org = dbinfo_node["org"].as<std::string>();
+            dbinfo.bucket = dbinfo_node["bucket"].as<std::string>();
+            dbinfo.token = dbinfo_node["token"].as<std::string>();
+
+        } catch (const std::exception& ex) {
+
+            cerr << "ERROR: The database configuration parameters were either missing or incorrectly formatted!" << endl;
+            exit( 1 );
+
+        }
+
+        
+
+    } else {
+        cerr << "ERROR: You must configure the database!" << endl;
+        exit( 1 );
+    }
+
+
     // loop through the specified interfaces to grab the number of required monitoring threads and DBC info
     unordered_map<Interface, string> bus_dbc_name_map;  /// will hold the interface names and the respective dbcs
     if (config["interfaces"]) {
@@ -192,6 +221,7 @@ int main(int argc, char *argv[])
     ConsumerParams con_params;
     con_params.bus_dbc_file_map = bus_dbc_name_map;
     con_params.queue = &decoder_queue;
+    con_params.dbinfo = dbinfo;
     pthread_t consumer_thread;
     if (pthread_create(&consumer_thread, NULL, consumer, (void *)(&con_params))) {
         sem_wait(&stdout_sem);
