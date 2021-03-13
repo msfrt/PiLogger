@@ -32,11 +32,30 @@
 
 #include "../src/external/influxdb-cpp-2/influxdb.hpp"
 
+#include <chrono>
+
 using namespace std;
+using namespace influxdb_cpp;
 
 extern const bool LOGGER_DEBUG;
 extern bool stop_logging;
 extern sem_t stdout_sem;
+
+
+/**
+ * Helper functions go here!
+ */
+namespace csmr {
+
+    /**
+     * Gets the current system unix time in milliseconds
+     * \returns The time in milliseconds
+     */
+    long int current_time(){
+        return std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch()).count();
+    }
+
+}
 
 
 
@@ -96,58 +115,85 @@ void* consumer(void* args){
         cout << "[DECODER]: DBCs loading complete!" << endl;
         sem_post(&stdout_sem);
     }
+
+
+    // pack the database server info into the server info object
+    server_info si(dbinfo.host, dbinfo.port, dbinfo.org, dbinfo.token, dbinfo.bucket);
+
+
+    // initialize a variable that will hold the next time that we're forced to write to
+    // the database.
+    auto next_write_time = csmr::current_time() + params.max_write_delay;
     
+    // variable to keep track of the number of measurements in the current batch
+    int current_batch_size = 0;
+
 
     // decode messages until asked to stop -----
-
     while (!stop_logging){
 
 
-        // pop a CMessage from the queue
-        auto message = queue->Pop();
-        auto frame = message->GetFrame();
-        auto iface = message->GetBusName();
-        
+        // loop to read and package a batch write
+        while ((csmr::current_time() <= next_write_time) && !stop_logging){
 
-        // print the frame data if in debug mode
-        if (LOGGER_DEBUG){
-            sem_wait(&stdout_sem);
-            cout << iface_to_string(iface) << " consumer - ";
-            cout << hex << setw(3) << setfill('0') << frame->can_id << ": ";
-            for (int i = 0; i < frame->can_dlc; i++)
-                printf("%02X ",frame->data[i]);
-            cout << endl;
-            sem_post(&stdout_sem);
-        }
+            
 
-        if (dbc_map[iface]){
+            // pop a CMessage from the queue
+            auto message = queue->Pop();
+            auto frame = message->GetFrame();
+            auto iface = message->GetBusName();
+            
 
-            // get a pointer to the corresponsing message in the right DBC
-            const dbcppp::Message* msg = dbc_map[iface]->getMessageById(frame->can_id);
-
-            // only decode if the message was found
-            if (msg) {
-
-                std::cout << "Received Message: " << msg->getName() << endl;
-
-                msg->forEachSignal([&](const dbcppp::Signal& sig){
-                    const dbcppp::Signal* mux_sig = msg->getMuxSignal();
-                    if (sig.getMultiplexerIndicator() != dbcppp::Signal::Multiplexer::MuxValue ||
-                        (mux_sig && mux_sig->decode(frame->data) == sig.getMultiplexerSwitchValue()))
-                    {
-                        std::cout << "\t" << sig.getName() << "=" << sig.rawToPhys(sig.decode(frame->data)) << sig.getUnit() << "\n";
-                    }
-                });
-
+            // print the frame data if in debug mode
+            if (LOGGER_DEBUG){
+                sem_wait(&stdout_sem);
+                cout << iface_to_string(iface) << " consumer - ";
+                cout << hex << setw(3) << setfill('0') << frame->can_id << ": ";
+                for (int i = 0; i < frame->can_dlc; i++)
+                    printf("%02X ",frame->data[i]);
+                cout << endl;
+                sem_post(&stdout_sem);
             }
 
-        } // end if (dbc_map[iface])
+            if (dbc_map[iface]){
+
+                // get a pointer to the corresponsing message in the right DBC
+                const dbcppp::Message* msg = dbc_map[iface]->getMessageById(frame->can_id);
+
+                // only decode if the message was found
+                if (msg) {
+
+                    std::cout << "Received Message: " << msg->getName() << endl;
+
+                    //auto tag_caller = yessir.meas("peni5");
+
+                    msg->forEachSignal([&](const dbcppp::Signal& sig){
+                        const dbcppp::Signal* mux_sig = msg->getMuxSignal();
+                        if (sig.getMultiplexerIndicator() != dbcppp::Signal::Multiplexer::MuxValue ||
+                            (mux_sig && mux_sig->decode(frame->data) == sig.getMultiplexerSwitchValue()))
+                        {
+                            std::cout << "\t" << sig.getName() << "=" << sig.rawToPhys(sig.decode(frame->data)) << sig.getUnit() << "\n";
+                        }
+                    });
+
+                }
+
+            } // end if (dbc_map[iface])
+
+            // free the can frame and the message
+            delete message->GetFrame();
+            delete message;
+
+        }
+
+        // set the next time to write a batch and reset the batch size count
+        next_write_time = csmr::current_time() + params.max_write_delay;
+        current_batch_size = 0;
 
 
 
-        // free the can frame and the message
-        delete message->GetFrame();
-        delete message;
+
+
 
     }
 

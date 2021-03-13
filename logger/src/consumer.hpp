@@ -34,6 +34,8 @@ struct ConsumerParams {
     std::unordered_map<Interface, std::string> bus_dbc_file_map;
     CThreadableMsgQueue<CMessage*> *queue;
     DBInfo dbinfo;
+    int max_write_size;
+    int max_write_delay;
 };
 
 void* consumer(void*);

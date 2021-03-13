@@ -23,6 +23,12 @@ using namespace::std;
 /// The default name of the logger configuration file
 const string DEFAULT_CONFIG_FILE = "logger.conf";
 
+/// The default max write size for batch write metrics. Configurable in the config file
+const int DEFAULT_MAX_WRITE_SIZE = 5000;
+
+/// The default write max write delay in milliseconds
+const int DEFAULT_MAX_WRITE_DELAY = 5000;
+
 /// setting this boolean as true will output debugging statements to
 /// the standard output stream
 extern const bool LOGGER_DEBUG = true;
@@ -136,6 +142,7 @@ int main(int argc, char *argv[])
 
     // Get the database information
     DBInfo dbinfo;
+
     if (config["database"]) {
 
         auto dbinfo_node = config["database"];
@@ -160,6 +167,20 @@ int main(int argc, char *argv[])
         cerr << "ERROR: You must configure the database!" << endl;
         exit( 1 );
     }
+
+
+    // optional configuration options in the config file
+    int max_write_size = DEFAULT_MAX_WRITE_SIZE;
+    try {
+        max_write_size  = config["max_write_size"].as<int>();
+        if (LOGGER_DEBUG) std::cout << "Max write size found in config: " << max_write_size << endl;
+    } catch (const std::exception& ex) {}
+
+    int max_write_delay = DEFAULT_MAX_WRITE_DELAY;
+    try {
+        max_write_delay  = config["max_write_delay"].as<int>();
+        if (LOGGER_DEBUG) std::cout << "Max write delay found in config: " << max_write_delay << endl;
+    } catch (const std::exception& ex) {}
 
 
     // loop through the specified interfaces to grab the number of required monitoring threads and DBC info
@@ -222,6 +243,8 @@ int main(int argc, char *argv[])
     con_params.bus_dbc_file_map = bus_dbc_name_map;
     con_params.queue = &decoder_queue;
     con_params.dbinfo = dbinfo;
+    con_params.max_write_size = max_write_size;
+    con_params.max_write_delay = max_write_delay;
     pthread_t consumer_thread;
     if (pthread_create(&consumer_thread, NULL, consumer, (void *)(&con_params))) {
         sem_wait(&stdout_sem);

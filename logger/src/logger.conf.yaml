@@ -31,3 +31,18 @@ interfaces:
 # computer hardware (most noteably memory).
 queue_size: 5000
 
+
+# max_write_size and max_write_delay refer to batch database writes. max_write_size is
+# the maximum amount of measurements allowable in a single database write. To optimize
+# writes, Influx suggests an optimum size of 5000 measurements:
+# https://docs.influxdata.com/influxdb/v2.0/write-data/best-practices/optimize-writes/#batch-writes
+# max_write_delay refers to the maximimum allowable delay in milliseconds before a batch of measurements
+# is sent to the database. If the batch includes less than the max_write_size, but the max_write_delay
+# has been exceeded, the batch will be sent anyways. To ease network stress and optimize writes,
+# the max_write_delay should be as large as possible.
+# Essentially, batches will be sent when either of these two limits are exceeded.
+# If these two configuration options are ommitted, the defaults for write size and write delay are
+# 5000 writes and 5000 milliseconds, respectively.
+max_write_size: 5000
+max_write_delay: 1000
+
