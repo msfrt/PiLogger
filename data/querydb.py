@@ -18,7 +18,7 @@ query1 = f'from(bucket:"{BUCKET}")\
 
 query2 = f'from(bucket:"{BUCKET}")\
 |> range(start: -15m)\
-|> filter(fn: (r) => r["_measurement"] == "processes")'
+|> filter(fn: (r) => r["_measurement"] == "cpu" or r["_measurement"] == "disk")'
 
 def df_to_csv(df, output_file):
     try:
@@ -26,17 +26,20 @@ def df_to_csv(df, output_file):
     except:
         print("An error occurred")
         
-def output_csv(values):
-    a = [f'r["_measurement"] == "{m}"' for m,v in zip(MEASUREMENTS,values) if v]
-    filters = " or ".join(a)
+def output_csv(value):
+#     a = [f'r["_measurement"] == "{m}"' for m,v in zip(MEASUREMENTS,values) if v]
+#     filters = " or ".join(a)
+#     query = f'from(bucket:"{BUCKET}")\
+# |> range(start: -1h)\
+# |> filter(fn: (r) => {filters})'
+#     print(query)
     query = f'from(bucket:"{BUCKET}")\
 |> range(start: -1h)\
-|> filter(fn: (r) => {filters})'
+|> filter(fn: (r) => r["_measurement"] == "{value}")'
     print(query)
-
     data_frame = query_api.query_data_frame(query)
     df_to_csv(data_frame, 'data.csv')
-    
+
 
 # results = client.query_api().query(org=ORG, query=query1)
 # for table in results:

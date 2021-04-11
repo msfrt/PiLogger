@@ -11,8 +11,9 @@ def index():
     if request.method == 'GET':
         return render_template('index.html')
     else:
-        values = [bool(request.form.get(m)) for m in MEASUREMENTS]
-        output_csv(values)
+        measurement = request.form.get('measurements')
+        print(measurement)
+        output_csv(measurement)
         return send_file('data.csv', mimetype='text/csv', attachment_filename='your_data.csv', as_attachment = True)
     
 if __name__ == "__main__":
