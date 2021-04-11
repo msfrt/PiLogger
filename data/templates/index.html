@@ -1,0 +1,35 @@
+{% extends 'layout.html' %}
+
+{% block body %}
+<h1 style='text-align:center' >MSU Formula Racing Team <br> Welcome!</h1>
+<h2>Download data</h2>
+<p>Select measurements</p>
+<form action="/" method="post">
+  <input type="checkbox" name="cpu" value="1">
+  <label for="cpu">cpu</label><br>
+  <input type="checkbox" name="disk" value="1">
+  <label for="disk">disk</label><br>
+  <input type="checkbox" name="diskio" value="1">
+  <label for="diskio">diskio</label><br>
+  <input type="checkbox" name="kernel" value="1">
+  <label for="kernel">kernel</label><br>
+  <input type="checkbox" name="mem" value="1">
+  <label for="mem">mem</label><br>
+  <input type="checkbox" name="net" value="1">
+  <label for="net">net</label><br>
+  <input type="checkbox" name="processes" value="1">
+  <label for="processes">processes</label><br>
+  <input type="checkbox" name="swap" value="1">
+  <label for="swap">swap</label><br>
+  <input type="checkbox" name="system" value="1">
+  <label for="system">system</label><br>
+  <input type="checkbox" name="temp" value="1">
+  <label for="temp">temp</label><br>
+  <input type="checkbox" name="weather" value="1">
+  <label for="weather">weather</label><br>
+  <input type="checkbox" name="wireless" value="1">
+  <label for="wireless">wireless</label><br>
+
+  <input type="submit" value="Submit">
+</form>
+{% endblock %}
