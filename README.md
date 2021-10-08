@@ -44,13 +44,6 @@ sudo apt-get install can-utils
 ## Useful commands
 
 
-#### Bring up a hardware CAN interface
-
-```bash
-sudo /sbin/ip link set can0 up type can bitrate 1000000
-sudo /sbin/ip link set can1 up type can bitrate 1000000
-```
-
 #### Bring up a virtual CAN interface
 
 ```bash
@@ -63,10 +56,16 @@ Verify that the interface is up:
 ifconfig
 ```
 
+#### Bring up a hardware CAN interface
+
+```bash
+sudo /sbin/ip link set can0 up type can bitrate 1000000
+sudo /sbin/ip link set can1 up type can bitrate 1000000
+```
 
 #### Automatically add virtual/physical CAN interface upon system startup
 
-The commands required to bring up a SocketCAN interface have been made into service descriptions, located in the `services` folder. To install the services on a fresh Ubuntu installation, simply run `sudo install-services.sh` from the `services` directory. This will copy the service files to the system directory and enable them to start upon boot.
+The commands required to bring up a SocketCAN interface have been made into service descriptions, located in the `services` folder. To install the services on a fresh Ubuntu installation, simply run `sudo install-can-services.sh` from the `services` directory in this repository. This will copy the service files to the system directory and enable them to start upon boot.
 
 To reload an interface, simply run `sudo systemctl reload socketcan-vcan0.service`. To manually stop the CAN interface, you can run `sudo systemctl stop socketcan-vcan0.service`. Please note that once you stop the service, you can't bring up the interface again with `sudo systemctl start socketcan-vcan0.service`, since the start script creates the interface files that were already exist from system boot. If you accidentally stop the interface, you can manually bring it back up with `ifconfig vcan0 up`.
 

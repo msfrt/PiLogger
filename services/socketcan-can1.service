@@ -1,0 +1,14 @@
+[Unit]
+Description=Hardware SocketCAN interface can1
+After=multi-user.target
+
+[Service]
+Type=oneshot
+RemainAfterExit=yes
+ExecStart=/sbin/ip link set can1 type can bitrate 1000000 restart-ms 100
+ExecReload=/sbin/ifconfig can1 down ; /sbin/ifconfig can1 up
+ExecStop=/sbin/ifconfig can1 down
+
+[Install]
+WantedBy=multi-user.target
+
