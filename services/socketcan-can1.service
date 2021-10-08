@@ -5,7 +5,7 @@ After=multi-user.target
 [Service]
 Type=oneshot
 RemainAfterExit=yes
-ExecStart=/sbin/ip link set can1 type can bitrate 1000000 restart-ms 100
+ExecStart=/sbin/ip link set can1 type can bitrate 1000000 restart-ms 100; ip link set up can1
 ExecReload=/sbin/ifconfig can1 down ; /sbin/ifconfig can1 up
 ExecStop=/sbin/ifconfig can1 down
 
