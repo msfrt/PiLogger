@@ -116,7 +116,7 @@ void* monitor(void* args){
         params.queue->Push(msg);  // launch it into the queue!
         
 
-        if (LOGGER_DEBUG){
+        if (false){
             sem_wait(&stdout_sem);
             cout << iface_to_string(params.iface_name)  << "  monitor - ";
             cout << hex << setw(3) << setfill('0') << frame->can_id << ": ";

@@ -77,7 +77,11 @@ void* consumer(void* args){
 
     // load the DBC files -----
 
-    std::unordered_map<Interface, std::unique_ptr<dbcppp::Network>> dbc_map;
+    // maps interface name (can0/1) to dbc network object
+    std::unordered_map<Interface, std::unique_ptr<dbcppp::INetwork>> dbc_map;
+
+    // maps interface name (can0/1) to messages within that DBC (for fast lookups)
+    std::unordered_map<Interface, std::unordered_map<uint64_t, const dbcppp::IMessage*>> msgs_map;
 
     if (LOGGER_DEBUG) {
         sem_wait(&stdout_sem);
@@ -103,7 +107,14 @@ void* consumer(void* args){
         }
 
         // create the DBC network object
-        std::unique_ptr<dbcppp::Network> net = dbcppp::Network::loadDBCFromIs(dbc_file);
+        std::unique_ptr<dbcppp::INetwork> net = dbcppp::INetwork::LoadDBCFromIs(dbc_file);
+
+        // insert the message pointers into the unordered map for O(1) lookup times with key value
+        // pair (ID, *message)
+        for (const dbcppp::IMessage& msg : net->Messages())
+        {
+            msgs_map[pair.first].insert(std::make_pair(msg.Id(), &msg));
+        }
 
         // move the unique ptr to the bus map
         dbc_map[pair.first] = std::move(net);
@@ -142,10 +153,12 @@ void* consumer(void* args){
             auto message = queue->Pop();
             auto frame = message->GetFrame();
             auto iface = message->GetBusName();
+
+            // cout << frame->can_id << " - " << frame->data[0] << endl;
             
 
             // print the frame data if in debug mode
-            if (LOGGER_DEBUG){
+            if (false){
                 sem_wait(&stdout_sem);
                 cout << iface_to_string(iface) << " consumer - ";
                 cout << hex << setw(3) << setfill('0') << frame->can_id << ": ";
@@ -155,28 +168,38 @@ void* consumer(void* args){
                 sem_post(&stdout_sem);
             }
 
+            // cout << "iface yuh: " << iface << " with ID " << hex << frame->can_id << dec << endl;
+            // const dbcppp::Message* msg = dbc_map[iface]->getMessageById(frame->can_id);
+            // if (msg){
+            //     std::cout << "Received Message: " << msg->getName() << " from " << iface_to_string(iface) << endl;
+            // }
+
+            // if there was a DBC successfully loaded for this interface
             if (dbc_map[iface]){
 
-                // get a pointer to the corresponsing message in the right DBC
-                const dbcppp::Message* msg = dbc_map[iface]->getMessageById(frame->can_id);
+                // find the message within the msgs_map for this bus
+                auto iter = msgs_map[iface].find(frame->can_id);
+                if (iter != msgs_map[iface].end()){  // if we found a corresponding message
+                    const dbcppp::IMessage* msg = iter->second;
 
-                // only decode if the message was found
-                if (msg) {
+                    std::cout << "Received Message: " << msg->Name() << " from " << iface_to_string(iface) << endl;
 
-                    std::cout << "Received Message: " << msg->getName() << endl;
+                    // Iterate through message's signals
+                    for (const dbcppp::ISignal& sig : msg->Signals()) {
+                        const dbcppp::ISignal* mux_sig = msg->MuxSignal();
 
-                    //auto tag_caller = yessir.meas("peni5");
+                        if (sig.MultiplexerIndicator() != dbcppp::ISignal::EMultiplexer::MuxValue ||
+                            (mux_sig && mux_sig->Decode(frame->data) == sig.MultiplexerSwitchValue())) {
 
-                    msg->forEachSignal([&](const dbcppp::Signal& sig){
-                        const dbcppp::Signal* mux_sig = msg->getMuxSignal();
-                        if (sig.getMultiplexerIndicator() != dbcppp::Signal::Multiplexer::MuxValue ||
-                            (mux_sig && mux_sig->decode(frame->data) == sig.getMultiplexerSwitchValue()))
-                        {
-                            std::cout << "\t" << sig.getName() << "=" << sig.rawToPhys(sig.decode(frame->data)) << sig.getUnit() << "\n";
+                            std::cout << "\t" << sig.Name() << "=" << sig.RawToPhys(sig.Decode(frame->data)) << sig.Unit() << "\n";
                         }
-                    });
+                    }
 
+                    
                 }
+
+
+
 
             } // end if (dbc_map[iface])
 

@@ -66,6 +66,13 @@
         "stop_token": "cpp",
         "cinttypes": "cpp",
         "typeindex": "cpp",
-        "variant": "cpp"
-    }
+        "variant": "cpp",
+        "*.ipp": "cpp",
+        "strstream": "cpp",
+        "future": "cpp",
+        "mutex": "cpp",
+        "thread": "cpp",
+        "cfenv": "cpp"
+    },
+    "cmake.sourceDirectory": "${workspaceFolder}/logger/src"
 }

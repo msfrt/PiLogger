@@ -192,11 +192,14 @@ int main(int argc, char *argv[])
         for (YAML::const_iterator it=ifaces_node.begin(); it!=ifaces_node.end();++it) {
             monitor_count++;
             string iface = it->first.as<std::string>();
+            string dbc = it->second.as<std::string>();
             if (LOGGER_DEBUG) std::cout << "Found " << iface << " in config." << endl;
 
             // add the bus name and the dbc name to the map
-            Interface current_iface = string_to_iface(it->first.as<std::string>());
-            bus_dbc_name_map[current_iface] = it->second.as<std::string>();
+            Interface current_iface = string_to_iface(iface);
+            bus_dbc_name_map[current_iface] = dbc;
+
+            cout << "iface " << iface << " has enum " << current_iface << " and dbc " << dbc << endl;
         }
 
     } else {
@@ -220,19 +223,21 @@ int main(int argc, char *argv[])
     // loop through the configured CAN interfaces and create threads for their monotors
     MonitorParams mon_params_ary[monitor_count];
     int current_thread_idx = 0;
-    for (YAML::const_iterator iface = config["interfaces"].begin(); iface != config["interfaces"].end(); ++iface) {
+    for (const auto & [ iface, dbc_path ] : bus_dbc_name_map) {
 
         // populate the parameters for the current interface's monitoring thread
-        mon_params_ary[current_thread_idx].iface_name = string_to_iface(iface->first.as<string>());
+        mon_params_ary[current_thread_idx].iface_name = iface;
         mon_params_ary[current_thread_idx].queue      = &decoder_queue;
         
         // create the thread
         if (pthread_create(&monitoring_threads[current_thread_idx], NULL, monitor, (void *)(&mon_params_ary[current_thread_idx]))) {
             sem_wait(&stdout_sem);
-            cerr << "ERROR: Failed to create " <<  iface->as<string>() << " monitoring thread!" << endl;
+            cerr << "ERROR: Failed to create " <<  iface_to_string(iface) << " monitoring thread!" << endl;
             sem_post(&stdout_sem);
             exit( 1 );
         }
+
+        current_thread_idx++;
 
     }
 

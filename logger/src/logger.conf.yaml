@@ -21,7 +21,8 @@ database:
 # NOTE: The SocketCAN interface must already be up, otherwise the logger may fail.
 # Check `ifconfig` command o verify.
 interfaces:
-    vcan0: "/home/sparty/Electrical-SR20/DBCs/CAN1.dbc"
+    can0: "/home/sparty/Electrical-SR20/DBCs/CAN1.dbc"
+    can1: "/home/sparty/Electrical-SR20/DBCs/CAN2.dbc"
 
 
 

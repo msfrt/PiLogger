@@ -10,5 +10,5 @@ ExecReload=/sbin/ifconfig can1 down ; /sbin/ifconfig can1 up
 ExecStop=/sbin/ifconfig can1 down
 
 [Install]
-WantedBy=multi-user.target
+WantedBy=can-hardware.target
 
