@@ -46,6 +46,12 @@ public:
      */ 
     int GetBufferSize() const { return mItemsK; }
 
+    /**
+     * Getter for the number of items current in the queue
+     * \returns The number of items in the queue
+     */
+    int GetLength() { int i; sem_getvalue(&mN, &i); return i; }
+
     void Push(queue_type item);
     queue_type Pop();
 

@@ -12,6 +12,8 @@
 #include <linux/can.h>
 #include <linux/can/raw.h>
 
+#include <memory>
+
 #include "Message.hpp"
 #include "ThreadableQueue.hpp"
 #include "interfaces.hpp"
@@ -23,7 +25,7 @@
 struct MonitorParams {
     Interface iface_name;
     std::string dbc;
-    CThreadableMsgQueue<CMessage*> *queue;
+    CThreadableMsgQueue<std::shared_ptr<CMessage>> *queue;
 };
 
 void* monitor(void*);

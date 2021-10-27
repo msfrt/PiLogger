@@ -10,6 +10,8 @@
 #include <linux/can.h>
 #include <linux/can/raw.h>
 
+#include <memory>
+
 #include "yaml-cpp/yaml.h"
 #include "Message.hpp"
 #include "ThreadableQueue.hpp"
@@ -39,7 +41,7 @@ const int MAX_THREADS = 100;
 
 /// Global queue to be accessed by socket monitoring threads and
 /// decoder thread
-CThreadableMsgQueue<CMessage*> decoder_queue;
+CThreadableMsgQueue<shared_ptr<CMessage>> decoder_queue;
 
 /// global vector to store the pthread objects for monitoring threads
 pthread_t monitoring_threads[MAX_THREADS];
@@ -185,22 +187,33 @@ int main(int argc, char *argv[])
 
     // loop through the specified interfaces to grab the number of required monitoring threads and DBC info
     unordered_map<Interface, string> bus_dbc_name_map;  /// will hold the interface names and the respective dbcs
+    unordered_map<Interface, string> bus_name_map;  /// will hold the interface names and their given names (ex. can0 -> "CAN1")
     if (config["interfaces"]) {
 
         auto ifaces_node = config["interfaces"];
 
         for (YAML::const_iterator it=ifaces_node.begin(); it!=ifaces_node.end();++it) {
             monitor_count++;
+            
+            // first is the interface name for socketcan
             string iface = it->first.as<std::string>();
-            string dbc = it->second.as<std::string>();
-            if (LOGGER_DEBUG) std::cout << "Found " << iface << " in config." << endl;
 
-            // add the bus name and the dbc name to the map
+            // info node contains bus name and dbc path
+            auto iface_info = it->second;
+
+            // extract info from the socketcan YAML node
+            string name = iface_info["name"].as<std::string>();
+            string dbc = iface_info["dbc"].as<std::string>();
+
+            if (LOGGER_DEBUG) std::cout << "Found " << iface << " named " << name << " with dbc " << dbc << " in config." << endl;
+
+            // add the interface name and the dbc name to the map
             Interface current_iface = string_to_iface(iface);
+            bus_name_map[current_iface] = name;
             bus_dbc_name_map[current_iface] = dbc;
-
-            cout << "iface " << iface << " has enum " << current_iface << " and dbc " << dbc << endl;
+            
         }
+
 
     } else {
         cerr << "ERROR: You must configure at least one interface to log!" << endl;
@@ -245,6 +258,7 @@ int main(int argc, char *argv[])
 
     // create the consumer thread
     ConsumerParams con_params;
+    con_params.bus_name_map = bus_name_map;
     con_params.bus_dbc_file_map = bus_dbc_name_map;
     con_params.queue = &decoder_queue;
     con_params.dbinfo = dbinfo;

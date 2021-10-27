@@ -9,6 +9,8 @@
 #include <string.h>
 #include <string>
 
+#include <memory>
+
 #include <unistd.h>
 #include <net/if.h>
 #include <sys/ioctl.h>
@@ -101,15 +103,15 @@ void* monitor(void* args){
 
         int nbytes;
 
-	    struct can_frame *frame = new struct can_frame;  // allocate a new CAN frame (avoids needless copies)
-        
+	    //struct can_frame *frame = new struct can_frame;  // allocate a new CAN frame (avoids needless copies)
+        shared_ptr<can_frame> frame = make_shared<can_frame>();
 
         // read a CAN frame from the socket. This function call is blocking!
-        nbytes = read(s, frame, sizeof(struct can_frame));
+        nbytes = read(s, frame.get(), sizeof(struct can_frame));
 
 
 
-        CMessage* msg = new CMessage;  // create a message from this bus
+        shared_ptr<CMessage> msg = make_shared<CMessage>();  // create a message from this bus
         msg->Timestamp();  // record the time
         msg->SetFrame(frame);  // set the frame ptr
         msg->SetBusName(params.iface_name);  // set the bus name

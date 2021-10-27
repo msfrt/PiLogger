@@ -72,6 +72,7 @@ void* consumer(void* args){
 
     auto queue = params.queue;
     auto &dbc_names_map = params.bus_dbc_file_map;
+    auto &interface_to_physical_name_map = params.bus_name_map;
     auto dbinfo = params.dbinfo;
 
 
@@ -143,12 +144,16 @@ void* consumer(void* args){
     // decode messages until asked to stop -----
     while (!stop_logging){
 
+        // start a new database logging thread
+        influxdb_cpp::builder builder;  // base builder object (first measurement goes here)
+        influxdb_cpp::detail::ts_caller *ts_caller = nullptr;  // caller object (subsequent go here)
+        influxdb_cpp::detail::tag_caller *tag_caller = nullptr;  // tag caller object (tags go here after measurements have been added to ts_caller)
+        influxdb_cpp::detail::field_caller *field_caller = nullptr;  // "   "  signals go here
 
-        // loop to read and package a batch write
-        while ((csmr::current_time() <= next_write_time) && !stop_logging){
+        // loop to read and package a batch write unti 1) the max time is up, 2) the max write size has been reached, 3) someone is closing the thread
+        while ((csmr::current_time() < next_write_time) && (current_batch_size < params.max_write_size) && !stop_logging){
 
             
-
             // pop a CMessage from the queue
             auto message = queue->Pop();
             auto frame = message->GetFrame();
@@ -182,7 +187,21 @@ void* consumer(void* args){
                 if (iter != msgs_map[iface].end()){  // if we found a corresponding message
                     const dbcppp::IMessage* msg = iter->second;
 
-                    std::cout << "Received Message: " << msg->Name() << " from " << iface_to_string(iface) << endl;
+                    // increment measurement count
+                    current_batch_size++;
+
+                    // if there's already been measurements added to the write queue builder
+                    if (ts_caller) {
+                        tag_caller = &ts_caller->meas(msg->Name())
+                                     .tag("bus", interface_to_physical_name_map[iface]);
+                    } else {
+                        // no measurements yet, add it to the builder
+                        tag_caller = &builder.meas("m")
+                                     .tag("bus", interface_to_physical_name_map[iface]);;
+                    }
+
+                    // reset field caller from last iteration
+                    field_caller = nullptr;
 
                     // Iterate through message's signals
                     for (const dbcppp::ISignal& sig : msg->Signals()) {
@@ -191,23 +210,48 @@ void* consumer(void* args){
                         if (sig.MultiplexerIndicator() != dbcppp::ISignal::EMultiplexer::MuxValue ||
                             (mux_sig && mux_sig->Decode(frame->data) == sig.MultiplexerSwitchValue())) {
 
-                            std::cout << "\t" << sig.Name() << "=" << sig.RawToPhys(sig.Decode(frame->data)) << sig.Unit() << "\n";
+                            // add each signal (field) to the message's (measurement's) list
+                            if (field_caller) {
+                                field_caller = &field_caller->field(sig.Name(), sig.RawToPhys(sig.Decode(frame->data)));
+                            } else {
+                                // no fields yet, add it to the tag caller
+                                field_caller = &tag_caller->field(sig.Name(), sig.RawToPhys(sig.Decode(frame->data)));
+                            }
+
+                            //std::cout << "\t" << sig.Name() << "=" << sig.RawToPhys(sig.Decode(frame->data)) << sig.Unit() << "\n";
                         }
+                    }
+
+                    // slap on the timestamp!
+                    if (field_caller){
+                        ts_caller = &field_caller->timestamp(message->GetTime());
+                        //ts_caller = &field_caller->field("finish", 69);
                     }
 
                     
                 }
 
 
-
-
             } // end if (dbc_map[iface])
 
             // free the can frame and the message
-            delete message->GetFrame();
-            delete message;
+            //delete message->GetFrame();
+            //delete message;
 
         }
+
+
+        // add count metric to the db write
+        ts_caller = &ts_caller->meas("logger").field(string("batch_size"), current_batch_size)
+                                              .field(string("queue_size"), queue->GetLength())    // current time - time of the last write
+                                              .field(string("write_time"), csmr::current_time() - (next_write_time - params.max_write_delay));
+
+
+        // write to the DB!
+        string response;
+        ts_caller->post_http(si, &response);
+
+        if (LOGGER_DEBUG) cout << "HTTP write response: " << response << endl;
 
         // set the next time to write a batch and reset the batch size count
         next_write_time = csmr::current_time() + params.max_write_delay;

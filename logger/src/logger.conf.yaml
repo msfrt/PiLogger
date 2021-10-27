@@ -9,20 +9,26 @@
 database:
     host: localhost
     port: 8086
-    org: spartans
-    bucket: SR-20
-    token: "dKwj4MP2P1Kf82UQQsP3nieTElZa6CbvNt03R31XQCZSLrtAJTcaOZ6D4g0c8EGkak-ZiIzM4DpsPgAxmuN8-g=="
+    org: msufsae
+    bucket: sr22
+    token: "gYOl0UaO37oTff1GwzXWBF1b3HhTWEdFsQnKGEjMbDxdmpZy2ydwQAvu4YQ8dUhdzt_9rDMpzmN0Ki6Vq2g4vw=="
 
 
 
 
-# The CAN interfaces to log, as well as their respective DBCs.
+# The CAN interfaces to log, as well as their respective names and DBCs. The name is important
+# because the socketcan enumeration (can0, can1, etc.) may not be representative of what you
+# actually call the CAN buses
 #
 # NOTE: The SocketCAN interface must already be up, otherwise the logger may fail.
-# Check `ifconfig` command o verify.
+# Check `ifconfig` command to verify.
 interfaces:
-    can0: "/home/sparty/Electrical-SR20/DBCs/CAN1.dbc"
-    can1: "/home/sparty/Electrical-SR20/DBCs/CAN2.dbc"
+    can1: 
+        name: "CAN1"
+        dbc: "/home/sparty/Electrical-SR20/DBCs/CAN1.dbc"
+    can0:
+        name: "CAN2"
+        dbc: "/home/sparty/Electrical-SR20/DBCs/CAN2.dbc"
 
 
 
