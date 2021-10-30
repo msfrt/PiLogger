@@ -1,0 +1,11 @@
+[Unit]
+Description=Python script that safely shuts down the Pi when connecting GPIO3
+After=multi-user.target
+
+[Service]
+Type=simple
+Restart=Always
+ExecStart=/usr/bin/python3 /etc/shutdown.py
+
+[Install]
+WantedBy=multi-user.target
