@@ -76,7 +76,7 @@ source /etc/os-release`
 
 After doing that, make sure that Telegraf runs during startup by enabling the service with `sudo systemctl enable telegraf`
 
-What's nice about telegraf is that everything about how it operates is defined within a single configuration file located in the `/etc/telegraf` folder. You can edit the `telegraf.conf` as you please, but for a Raspberry Pi, I'd suggest copying the one in the `telegraf` folder of this repository. Review and edit the information in the influxdb configuration section, then copy it to `/etc/telegraf/telegraf.conf`. Make sure you have a valid token from influx that telegraf can use to write to the bucket specified in the config file. Once you have the token run `export INFLUX_TOKEN=<INFLUX_TOKEN>` to save it. Then, after everything is in place, run `systemctl reload telegraf`.
+What's nice about telegraf is that everything about how it operates is defined within a single configuration file located in the `/etc/telegraf` folder. You can edit the `telegraf.conf` as you please, but for a Raspberry Pi, I'd suggest copying the one in the `telegraf` folder of this repository. Review and edit the information in the influxdb configuration section, then copy it to `/etc/telegraf/telegraf.conf`. Make sure you have a valid token from influx that telegraf can use to write to the bucket specified in the config file. Then, after everything is in the config file, run `systemctl reload telegraf`.
 
 ## CAN Hat setup
 
