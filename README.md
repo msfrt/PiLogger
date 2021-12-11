@@ -10,9 +10,9 @@
   - [Install Telegraf](#install-telegraf)
   - [Setup the Shutdown Button](#setup-the-shutdown-button)
   - [CAN Hat setup](#can-hat-setup)
-- [SocketCAN](#socketcan)
-  - [Installing](#installing)
-  - [Useful commands](#useful-commands)
+  - [SocketCAN](#socketcan)
+    - [Installing](#installing)
+    - [Useful commands](#useful-commands)
       - [Bring up a virtual CAN interface](#bring-up-a-virtual-can-interface)
       - [Bring up a hardware CAN interface](#bring-up-a-hardware-can-interface)
       - [Automatically add virtual/physical CAN interface upon system startup](#automatically-add-virtualphysical-can-interface-upon-system-startup)
@@ -85,17 +85,17 @@ Be sure to enable the Pi to be able to be shutdown and start up by the press of 
 
 ## CAN Hat setup
 
-To setup the [PiCAN2 Duo](https://copperhilltech.com/pican2-duo-can-bus-board-for-raspberry-pi/) CAN hat on Ubuntu Server, you can follow the instructions on [CopperHill's website](https://copperhilltech.com/blog/pican2-pican3-and-picanm-driver-installation-for-raspberry-pi/) with the one exception that instead of adding the overlays in `/boot/config.txt` you should pop the SD card out, load it into another computer, and edit the `usercfg.txt` file instead.
+To setup the [PiCAN2 Duo](https://copperhilltech.com/pican2-duo-can-bus-board-for-raspberry-pi/) CAN hat on Ubuntu Server, you can follow the instructions on [CopperHill's website](https://copperhilltech.com/blog/pican2-pican3-and-picanm-driver-installation-for-raspberry-pi/) with the one exception that instead of adding the overlays in `/boot/config.txt` you should pop the SD card out, load it into another computer, and edit the `config.txt` file instead.
 
-# SocketCAN
+## SocketCAN
 
-## Installing
+### Installing
 
 ```bash
 sudo apt-get install can-utils
 ```
 
-## Useful commands
+### Useful commands
 
 
 #### Bring up a virtual CAN interface
