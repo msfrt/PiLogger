@@ -64,7 +64,7 @@ The Makefiles should now be present if all prerequisits were satisfied.
 
 ## Build binaries
 
-After running CMake, you're all set. Simply run the command `make`.
+After running CMake, you're all set. Simply run the command `make` from within the `build` directory.
 
 # Configuration
 
