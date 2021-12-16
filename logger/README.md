@@ -48,7 +48,7 @@ There is nothing that you need to do to install yaml-cpp after the submodule is 
 Installing dbcppp is less straightforward, but still easy. Once you've installed Boost and LibXml2 as [described above](#dependencies), follow [these steps](https://github.com/xR3b0rn/dbcppp#build--install) in the dbcppp submodule folder:
   1. `mkdir build`
   1. `cd build`
-  1. `cmake -DCMAKE_BUILD_TYPE=Release ..`
+  1. `cmake -DCMAKE_BUILD_TYPE=Release -Dbuild_tests=OFF -Dbuild_examples=OFF ..`
   1. `make -j`
   1. `sudo make install`
   1. `sudo ldconfig` on unix systems only

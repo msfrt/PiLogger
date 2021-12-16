@@ -8,10 +8,10 @@ set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
 
-# ensure that yaml-cpp is installed and include it's directories
+# ensure that yaml-cpp is installed and include its directories
 add_subdirectory(external/yaml-cpp) # This is one way of referencing another CMake project
 
-# add dbccpp for dbc decoding (be sure that it's dependencies are installed!)
+# add dbccpp for dbc decoding (be sure that its dependencies are installed!)
 # add_subdirectory(external/dbcppp)
 
 

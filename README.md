@@ -17,6 +17,7 @@
       - [Bring up a virtual CAN interface](#bring-up-a-virtual-can-interface)
       - [Bring up a hardware CAN interface](#bring-up-a-hardware-can-interface)
       - [Sending and viewing CAN messages](#sending-and-viewing-can-messages)
+  - [Install cron jobs](#install-cron-jobs)
 - [InfluxDB](#influxdb)
   - [Installation](#installation)
     - [Creating an InfluxDB service](#creating-an-influxdb-service)
@@ -81,7 +82,8 @@ What's nice about telegraf is that everything about how it operates is defined w
 
 ## Setup the Shutdown Button
 
-Be sure to enable the Pi to be able to be shutdown and start up by the press of a button. The instructions are located in the [shutdown folder](shutdown/).
+Be sure to enable the Pi to be able to be shutdown and start up by the press of a button. The instructions are located in the [shutdown folder](shutdown/). 
+
 
 ## CAN Hat setup
 
@@ -140,6 +142,15 @@ If looking for a particular message on a busy bus, you can combine `candump` wit
 
 ```bash
 candump vcan0 | grep 123
+```
+
+## Install cron jobs
+Cron is a service that allows you to run commands at a predetermined time interval. To edit the super user cron jobs, run `sudo crontab -e`. If it's your first time running the command, you'll be casked to choose your preferred text editor. After entering the editing window, paste in the following commands below:
+
+```
+# bring up CAN interfaces every minute (does not affect already running interfaces)
+* * * * * /sbin/ip link set can0 up type can bitrate 1000000
+* * * * * /sbin/ip link set can1 up type can bitrate 1000000
 ```
 
 # InfluxDB
