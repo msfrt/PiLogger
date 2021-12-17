@@ -1,5 +1,6 @@
 # PiLogger <!-- omit in toc -->
 
+- [Clone the repository](#clone-the-repository)
 - [Hardware setup](#hardware-setup)
   - [Installing Ubuntu](#installing-ubuntu)
     - [Updating network information after installation](#updating-network-information-after-installation)
@@ -22,6 +23,13 @@
   - [Installation](#installation)
     - [Creating an InfluxDB service](#creating-an-influxdb-service)
 
+# Clone the repository
+
+**Very important!** This repository includes git submodules so that dependencies are less of a mess. The only downside is that the submodules do not clone automatically! When cloning the repository, it is imperitive that you use this command, otherwise you will have to initialize the submodules and clone them individually.
+
+```
+git clone --recurse-submodules https://github.com/msfrt/PiLogger.git
+```
 
 # Hardware setup
 
