@@ -27,7 +27,7 @@
 
 ## Installing Ubuntu
 
-There are many ways to succeed at installing Ubuntu Server. This application was built on Ubuntu Server 21.04, so check yourself with earlier versions. I don't need to explain how to do this. You can read [this tutorial](https://ubuntu.com/tutorials/how-to-install-ubuntu-on-your-raspberry-pi#1-overview) instead. Just note that the WiFi section is a bit outdated. In the YAML file, I believe that you will need to escape the stuff in quotations. For example, instead of wifi name `"Formula House"`, you would put `\"Formula House\"`.
+There are many ways to succeed at installing Ubuntu Server. This application was built on Ubuntu Server 21.04, so check yourself with earlier versions. I don't need to explain how to do this. You can read [this tutorial](https://ubuntu.com/tutorials/how-to-install-ubuntu-on-your-raspberry-pi#1-overview) instead.
 
 ### Updating network information after installation
 
@@ -99,7 +99,7 @@ sudo apt-get install can-utils
 
 ### Automatically bring up CAN interfaces
 
-SocketCAN interfaces do not register upon system startup by default. To enable the `can0` and `can1` hardware interfaces upon system startup, cd into the `can_interfaces` folder and run `./install_can_interfaces`.
+SocketCAN interfaces do not register upon system startup by default. There is a [cron job](#install-cron-jobs) that will bring these interfaces up upon boot.
 
 ### Useful commands
 
@@ -148,9 +148,9 @@ candump vcan0 | grep 123
 Cron is a service that allows you to run commands at a predetermined time interval. To edit the super user cron jobs, run `sudo crontab -e`. If it's your first time running the command, you'll be casked to choose your preferred text editor. After entering the editing window, paste in the following commands below:
 
 ```
-# bring up CAN interfaces every minute (does not affect already running interfaces)
-* * * * * /sbin/ip link set can0 up type can bitrate 1000000
-* * * * * /sbin/ip link set can1 up type can bitrate 1000000
+# bring up CAN interfaces upon startup
+@reboot /sbin/ip link set can0 up type can bitrate 1000000
+@reboot /sbin/ip link set can1 up type can bitrate 1000000
 ```
 
 # InfluxDB
