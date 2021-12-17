@@ -1,0 +1,12 @@
+[Unit]
+Description=PiLogger service file
+Documentation=https://github.com/msfrt/PiLogger
+After=multi-user.target
+
+[Service]
+Restart=on-failure
+RestartSec=1
+ExecStart=/bin/logger -f /etc/PiLogger/logger.conf
+
+[Install]
+WantedBy=multi-user.target

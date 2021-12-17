@@ -32,3 +32,12 @@
 *.app
 
 .DS_Store
+
+# logger project build directory
+logger/src/build
+logger/build
+build
+
+
+# VSCode files
+*.vscode/*

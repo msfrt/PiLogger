@@ -1,0 +1,9 @@
+[submodule "logger/src/external/yaml-cpp"]
+	path = logger/src/external/yaml-cpp
+	url = https://github.com/jbeder/yaml-cpp
+[submodule "logger/src/external/dbcppp"]
+	path = logger/src/external/dbcppp
+	url = https://github.com/xR3b0rn/dbcppp.git
+[submodule "logger/src/external/influxdb-cpp-2"]
+	path = logger/src/external/influxdb-cpp-2
+	url = https://github.com/TheYonkk/influxdb-cpp-2.git
