@@ -14,6 +14,12 @@ make -j
 sudo make install
 sudo ldconfig
 
+# build the logger application
+mkdir ../../../build   # (PiLogger/logger/src/build)
+cd ../../../build
+cmake ..
+make
+
 
 
 
