@@ -5,10 +5,10 @@
 <!-- code_chunk_output -->
 
 - [logger](#logger)
-- [Build](#build)
+- [Automatic Build](#automatic-build)
+- [Manual Build](#manual-build)
   - [Dependencies](#dependencies)
-    - [Installing yaml-cpp](#installing-yaml-cpp)
-    - [Installing dbcppp](#installing-dbcppp)
+    - [Manually installing dbcppp](#manually-installing-dbcppp)
   - [CMake](#cmake)
   - [Build binaries](#build-binaries)
 - [Configuration](#configuration)
@@ -18,40 +18,29 @@
 
 <!-- /code_chunk_output -->
 
+# Automatic Build
 
-# Build
+To use the logger, you must build it first. To make things nice and easy, I've created a `./build` script that will download, build, and install the dependencies for the logger, as well as build the logger application once dependencies are met. To run this, simply run `sudo ./build` from within the `logger` directory.
 
-To use the logger, you must build it first. This is accomplished using [CMake](https://cmake.org). If CMake is not installed, you must install it, either by downloading the source and building, or simply running `sudo apt-get install cmake` (easiest). Downloading via the package manager may not install the latest version, so I reccomend building by source. Instructions for doing so can be found [here](https://cmake.org/install/).
+
+# Manual Build
+
+Manual build is accomplished using [CMake](https://cmake.org). If CMake is not installed, you must install it, either by downloading the source and building, or simply running `sudo apt-get install cmake` (easiest). Downloading via the package manager may not install the latest version, so I reccomend building by source. Instructions for doing so can be found [here](https://cmake.org/install/).
 
 ## Dependencies
 
 * [yaml-cpp](https://github.com/jbeder/yaml-cpp) is used for YAML file parsing, but is included as a submodule in this repository to make for easy building. If the yaml-cpp files do not appear in the `logger/src/external/yaml-cpp` directory after cloning, cd into that directory and run `git submodule init`, followed by `git submodule update`.
 * [influxdb-cpp-2](https://github.com/TheYonkk/influxdb-cpp-2) is required to write to the database. If the influxdb-cpp files do not appear in the `logger/src/external/influxdb-cpp-2` directory after cloning, cd into that directory and run `git submodule init`, followed by `git submodule update`.
-* [dbcppp](https://github.com/xR3b0rn/dbcppp) is used for CAN frame decoding, but is included as a submodule in this repository to make for easy building. If the dbcppp files do not appear in the `logger/src/external/dbcppp` directory after cloning, cd into that directory and run `git submodule init`, followed by `git submodule update`. dbccpp has two dependencies that you need to manually install:
-  * Boost 1.72.0 or greater (instructions from [here](https://stackoverflow.com/a/24086375))
-    1. `wget -O boost_1_72_0.tar.gz https://sourceforge.net/projects/boost/files/boost/1.72.0/boost_1_72_0.tar.gz/download`
-    1. `tar xzvf boost_1_72_0.tar.gz`
-    1. `cd boost_1_72_0/`
-    1. `sudo apt-get update`
-    1. `sudo apt-get install build-essential g++ python-dev autotools-dev libicu-dev libbz2-dev libboost-all-dev`
-    1. `./bootstrap.sh --prefix=/usr/`
-    1. `./b2`
-    1. `sudo ./b2 install`
-  * LibXml2
-    1. `sudo apt-get install libxml2-dev`
+* [dbcppp](https://github.com/xR3b0rn/dbcppp) is used for CAN frame decoding, but is included as a submodule in this repository to make for easy building. If the dbcppp files do not appear in the `logger/src/external/dbcppp` directory after cloning, cd into that directory and run `git submodule init`, followed by `git submodule update`. dbccpp has additional subrepos that need to be cloned as well. You can find those in the `third-party` folder in that repo.
 
-
-### Installing yaml-cpp
-There is nothing that you need to do to install yaml-cpp after the submodule is cloned. The logger CMake command and the resultant Makefiles handle all compilation and linking.
-
-### Installing dbcppp
-Installing dbcppp is less straightforward, but still easy. Once you've installed Boost and LibXml2 as [described above](#dependencies), follow [these steps](https://github.com/xR3b0rn/dbcppp#build--install) in the dbcppp submodule folder:
+### Manually installing dbcppp
+dbcppp is built and installed via the `./build` script located in this directory, however, if it fails and you need to install it directly, here are the steps. Follow [these steps](https://github.com/xR3b0rn/dbcppp#build--install) in the dbcppp submodule folder:
   1. `mkdir build`
-  1. `cd build`
-  1. `cmake -DCMAKE_BUILD_TYPE=Release -Dbuild_tests=OFF -Dbuild_examples=OFF ..`
-  1. `make -j`
-  1. `sudo make install`
-  1. `sudo ldconfig` on unix systems only
+  2. `cd build`
+  3. `cmake -DCMAKE_BUILD_TYPE=Release -Dbuild_tests=OFF -Dbuild_examples=OFF ..`
+  4. `make -j`
+  5. `sudo make install`
+  6. `sudo ldconfig` on unix systems only
 
 ## CMake
 CMake creates the Makefiles necessary for UNIX building. To run CMake:

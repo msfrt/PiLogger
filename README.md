@@ -19,6 +19,7 @@
       - [Bring up a hardware CAN interface](#bring-up-a-hardware-can-interface)
       - [Sending and viewing CAN messages](#sending-and-viewing-can-messages)
   - [Install cron jobs](#install-cron-jobs)
+- [Logger](#logger)
 - [InfluxDB](#influxdb)
   - [Installation](#installation)
     - [Creating an InfluxDB service](#creating-an-influxdb-service)
@@ -37,13 +38,22 @@ git clone --recurse-submodules https://github.com/msfrt/PiLogger.git
 
 There are many ways to succeed at installing Ubuntu Server. This application was built on Ubuntu Server 21.04, so check yourself with earlier versions. I don't need to explain how to do this. You can read [this tutorial](https://ubuntu.com/tutorials/how-to-install-ubuntu-on-your-raspberry-pi#1-overview) instead.
 
+**NOTE:** After writing the ubuntu files to the sd card, I highly reccomend for you to skip to the [CAN Hat setup](#can-hat-setup) section of this readme. This is because the CAN hat requires you to modify files on the SD while the raspberry pi is offline. This process is very similar to the network setup in the ubuntu tutorial.
+
+Once you're done install ubuntu and you've logged in for the first time, be sure to update the default packages: 
+```
+sudo apt-get update
+sudo apt-get upgrade
+sudo reboot
+```
+
 ### Updating network information after installation
 
-I updated the WiFi information after reading [his article](https://linuxconfig.org/ubuntu-20-04-connect-to-wifi-from-command-line). Please note that this time, the quotations are *not* escaped. This is **actual yaml**.
+I updated the WiFi information after reading [his article](https://linuxconfig.org/ubuntu-20-04-connect-to-wifi-from-command-line). 
 
 ### Updating username and hostname after installation
 
-Again, so easy. Google really is amazing. [This post](https://askubuntu.com/questions/34074/how-do-i-change-my-username) showed me how to change the username from ubuntu to whatever I wanted, and [this article](https://www.cyberciti.biz/faq/ubuntu-change-hostname-command/) told me how to change the hostname. Please note, you must create a temporary user when changing the username (which is explained in the post I linked).
+Again, so easy. Google really is amazing. [This post](https://askubuntu.com/a/317008) showed me how to change the username from ubuntu to whatever I wanted, and [this article](https://www.cyberciti.biz/faq/ubuntu-change-hostname-command/) told me how to change the hostname. Please note, you must create a temporary user when changing the username (which is explained in the post I linked).
 
 ## SSH keygen and key swap
 
@@ -73,7 +83,7 @@ Log out, then log back in. You should be able to run `i2cdetect -y 1` without su
 
 ### Sixfab Power API
 
-Install the api that interfaces (*sometimes, only if you're lucky*) with the battery UPS. `pip3 install sixfab-power`. The GitHub repository for the API is located [here](https://github.com/sixfab/sixfab-power-python-api). The API is essentially a Python wrapper for their i2c communication protocol.
+Install the api that interfaces (*sometimes, only if you're lucky*) with the battery UPS. `pip3 install power-api` Here's the [repo](https://github.com/sixfab/sixfab-power-python-api). The API is essentially a Python wrapper for their i2c communication protocol.
 
 ## Install Telegraf
 
@@ -160,6 +170,10 @@ Cron is a service that allows you to run commands at a predetermined time interv
 @reboot /sbin/ip link set can0 up type can bitrate 1000000
 @reboot /sbin/ip link set can1 up type can bitrate 1000000
 ```
+
+# Logger
+
+To build and install the logger application on a raspberry pi, cd into the `logger` directory and read the [README.md](logger/README.md) file.
 
 # InfluxDB
 
