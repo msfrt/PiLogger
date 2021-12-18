@@ -57,11 +57,15 @@ After running CMake, you're all set. Simply run the command `make` from within t
 
 # Configuration
 
-TDB
+After building, all of the logger configuration is located in the `src/build/logger.conf` file. Please note that, for whatever reason, the InfluxDB token that must be used has to be the owner's main key. I am unsure why, but that's what works.
+
+Be sure that you have full paths to the DBC files, not relative paths.
+
+If you examine the logger's output and the HTTP write response is null but there's no data in the database, it's likely a permissions issue. Try changing the Influx token.
 
 # Run
 
-To run the logger, simply run `./logger` after building
+To manually run the logger, simply run `./logger` after building
 
 ## Command line options
 
