@@ -70,7 +70,6 @@ To interface with the Sixfab Power HAT, i2c is used. The tools used to communica
 2. `sudo apt upgrade -y`
 3. `sudo apt install -y i2c-tools python3-pip`
 
-Then, add the line `dtparam=i2c_arm=on` in the file `/boot/config.txt` (you may need to create the file if it is not there)
 
 By default, you must access i2c using sudo, otherwise your prompts will fail. I would reccomend adding yourself to the i2c user group as explained in [this wonderful post](https://askubuntu.com/a/1273900).
 
@@ -87,12 +86,8 @@ Install the api that interfaces (*sometimes, only if you're lucky*) with the bat
 
 ## Install Telegraf
 
-Telegraf is a program from the makers of InfluxDB that writes usage metrics to an influx instance. This is very useful to have on the raspberry pi. The installation instructs are on there website, [here](https://docs.influxdata.com/telegraf/v1.20/introduction/installation/), but the steps to install from the package manager are below:
+Telegraf is a program from the makers of InfluxDB that writes usage metrics to an influx instance. This is very useful to have on the raspberry pi. The installation instructs are on there website, [here](https://docs.influxdata.com/telegraf/v1.20/introduction/installation/), but you should just be able to run `sudo apt-get update && sudo apt-get install telegraf`.
 
-1. `wget -qO- https://repos.influxdata.com/influxdb.key | sudo tee /etc/apt/trusted.gpg.d/influxdb.asc >/dev/null
-source /etc/os-release`
-1. `echo "deb https://repos.influxdata.com/${ID} ${VERSION_CODENAME} stable" | sudo tee /etc/apt/sources.list.d/influxdb.list`
-1. `sudo apt-get update && sudo apt-get install telegraf`
 
 After doing that, make sure that Telegraf runs during startup by enabling the service with `sudo systemctl enable telegraf`
 
