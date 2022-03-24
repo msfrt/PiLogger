@@ -19,6 +19,7 @@
       - [Bring up a hardware CAN interface](#bring-up-a-hardware-can-interface)
       - [Sending and viewing CAN messages](#sending-and-viewing-can-messages)
   - [Install cron jobs](#install-cron-jobs)
+  - [Set up modem manager for cellular connection](#set-up-modem-manager-for-cellular-connection)
 - [Logger](#logger)
 - [InfluxDB](#influxdb)
   - [Installation](#installation)
@@ -165,6 +166,30 @@ Cron is a service that allows you to run commands at a predetermined time interv
 @reboot /sbin/ip link set can0 up type can bitrate 1000000
 @reboot /sbin/ip link set can1 up type can bitrate 1000000
 ```
+
+## Set up modem manager for cellular connection
+Ubuntu gives a good tutorial [here](https://ubuntu.com/core/docs/networkmanager/configure-cellular-connections), but it doesn't all work for the PiLogger since our modem is reached through a USB interface.
+
+First, install modem-manager:
+```
+sudo snap install modem-manager
+sudo apt install network-manager
+```
+
+You can verify that the modem is plugged into your device if `cdc-wdm0` shows up when you run `sudo ls /dev/`. Now, add all discoverable modems with this command:
+
+```
+sudo nmcli c add type gsm ifname '*' con-name <name> apn <operator_apn>
+```
+
+For Mint mobile, the operator APN is `Wholesale`. You can name the con-name whatever you want. I named mine `i_love_internet`. Just be mindful that you need to use it in the next commands:
+
+```
+sudo nmcli c modify <name> connection.autoconnect yes
+sudo nmcli r wwan on
+```
+
+You should be all set. You should be able to see a new interface after running `ifconfig`. Additionally, to make sure that you're actually getting service, you can run `ping -I <interface name in ifconfig menu> google.com`.
 
 # Logger
 
