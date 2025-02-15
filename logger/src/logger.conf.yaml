@@ -7,12 +7,14 @@
 
 # information for the InfluxDB database where the data should be logged
 database:
-    host: localhost
-    port: 8086
+    ## host: localhost
+    host: 100.77.191.126
+    ## port: 8086
+    port: 6969
     org: msufsae
     bucket: sr22
-    token: "V7BGZUbaV5zgFesyXN4i3CyUJgSOfxPflltkYunqOU6uu-bFKvUHIl0DD8aQmfHMaeO5YXNml4Ws1QxsZdAcgw=="
-
+    ## token: "V7BGZUbaV5zgFesyXN4i3CyUJgSOfxPflltkYunqOU6uu-bFKvUHIl0DD8aQmfHMaeO5YXNml4Ws1QxsZdAcgw=="
+    token: "2UHvMtWDLKGOeHd_RLXmjautspJkMNFl5HTN9ForNGXXE-KhNZRgccH3jGqY_UfchB9rGWO9M54skzFC9rB2VQ=="
 
 
 
