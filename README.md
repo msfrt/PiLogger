@@ -215,4 +215,12 @@ These instructions are adapted from [this site](http://blog.lemminger.eu/run-inf
 
 The influxdb2 service will now start on boot, and all influx files will be stored in `/home/influxdb`. If you'd like to start it immediately after installing, run `sudo systemctl start influxdb2.service`
 
+```
+notes when updating for new car:
 
+files to change when changing bucket:
+  * telegraf/telegraf.config
+  * logger/src/build/logger.conf
+
+* wont be using app.py
+```

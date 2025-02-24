@@ -9,7 +9,7 @@ CHANNEL = 'vcan0'
 bus = can.interface.Bus(bustype=BUSTYPE, channel=CHANNEL)
 
 # DBC file
-DBC_FILE = "../../Electrical-SR20/DBCs/CAN2.dbc"
+DBC_FILE = "../../Electrical-SR25/src/SR25/CAN/raptor_CAN2.dbc" # need to figure out what can file this should be for sr25
 
 # Get data from DBC file
 db = cantools.database.load_file(DBC_FILE)
