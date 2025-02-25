@@ -11,8 +11,8 @@ database:
     host: 100.77.191.126
     ## port: 8086
     port: 6969
-    org: msufsae
-    bucket: sr22
+    org: first-org
+    bucket: sr25
     ## token: "V7BGZUbaV5zgFesyXN4i3CyUJgSOfxPflltkYunqOU6uu-bFKvUHIl0DD8aQmfHMaeO5YXNml4Ws1QxsZdAcgw=="
     token: "2UHvMtWDLKGOeHd_RLXmjautspJkMNFl5HTN9ForNGXXE-KhNZRgccH3jGqY_UfchB9rGWO9M54skzFC9rB2VQ=="
 
@@ -25,13 +25,18 @@ database:
 # NOTE: The SocketCAN interface must already be up, otherwise the logger may fail.
 # Check `ifconfig` command to verify.
 interfaces:
-    can1: 
-        name: "CAN1"
-        dbc: "/home/sparty/Electrical-SR20/DBCs/CAN1.dbc"
-    can0:
-        name: "CAN2"
-        dbc: "/home/sparty/Electrical-SR20/DBCs/CAN2.dbc"
-
+    vcan1:
+        name: "vcan1"
+        dbc: "/home/sparty/Electrical-SR25/src/SR25/CAN/virtual_CAN1.dbc"
+    vcan2:
+        name: "vcan2"
+        dbc: "/home/sparty/Electrical-SR25/src/SR25/CAN/virtual_CAN2.dbc"
+    can1:
+        name: "can1"
+        dbc: "/home/sparty/Electrical-SR25/src/SR25/CAN/raptor_CAN1.dbc"
+    can2:
+        name: "can2"
+        dbc: "/home/sparty/Electrical-SR25/src/SR25/CAN/raptor_CAN2.dbc"
 
 
 # The size of the decoding queue. The decoding queue is where CAN frames are 
@@ -54,4 +59,3 @@ queue_size: 5000
 # 5000 writes and 5000 milliseconds, respectively.
 max_write_size: 5000
 max_write_delay: 1000
-
